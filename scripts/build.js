@@ -81,7 +81,13 @@ staticDirs.forEach(dir => {
     }
 });
 
-// 5. Audit dist size and file count
+// 5. Ensure legacy _redirects is purged if present from cache
+const legacyRedirects = path.join(DIST_DIR, '_redirects');
+if (fs.existsSync(legacyRedirects)) {
+    fs.unlinkSync(legacyRedirects);
+}
+
+// 6. Audit dist size and file count
 let totalFiles = 0;
 function countFiles(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });
