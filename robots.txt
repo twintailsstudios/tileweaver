@@ -1,0 +1,6 @@
+# robots.txt for https://tileweaver.net/
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://tileweaver.net/sitemap.xml

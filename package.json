@@ -1,0 +1,24 @@
+{
+  "name": "tileweaver",
+  "version": "3.3.0",
+  "description": "Professional Web RPG Map & Autotile Level Editor",
+  "homepage": "https://tileweaver.net",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx -y serve .",
+    "test": "node scripts/generate_assets_node.js && node scripts/test_constants_system.js && node scripts/test_collection_tileset.js && node scripts/test_tiled_export_import.js && node scripts/test_tab_locking_autoswitch.js && node scripts/test_extruder.js && node scripts/test_unified_add_tileset.js && node scripts/test_viewport_zoom.js && node scripts/test_viewport_interactions.js && node scripts/test_tileset_scroll_zoom.js && node scripts/test_asset_management_system.js && node scripts/test_material_swatches_studio.js && node scripts/test_right_inspector_collapse.js && node scripts/test_autotile_engine.js && node scripts/test_rendering_engine.js && node scripts/test_autotile_wizard.js && node scripts/test_header_manager.js && node scripts/test_import_wizard.js && node scripts/test_layer_manager.js && node scripts/test_material_properties.js && node scripts/test_object_inspector.js && node scripts/test_tile_properties.js && node scripts/test_tools_manager.js && node scripts/test_upload_wizard.js && node scripts/test_app_bootstrapper.js && node scripts/test_empty_project_startup.js"
+  },
+  "keywords": [
+    "tilemap",
+    "autotile",
+    "dualgrid",
+    "rpgmaker",
+    "map-editor",
+    "canvas"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@napi-rs/canvas": "^1.0.5"
+  }
+}

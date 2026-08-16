@@ -1,0 +1,146 @@
+==========================================
+ MAP LEVEL COMPARISON 
+==========================================
+Root key 'compressionlevel': -1
+Root key 'height': 240
+Root key 'infinite': False
+Root key 'nextlayerid': 11
+Root key 'nextobjectid': 375
+Root key 'orientation': 'orthogonal'
+Root key 'renderorder': 'right-down'
+Root key 'tiledversion': '1.12.2'
+Root key 'tileheight': 32
+Root key 'tilewidth': 32
+Root key 'type': 'map'
+Root key 'version': '1.10'
+Root key 'width': 240
+
+==========================================
+ LAYERS COMPARISON 
+==========================================
+
+Layer #1: name='ground', type='tilelayer', id=1
+  Keys present: ['data', 'height', 'id', 'name', 'opacity', 'type', 'visible', 'width', 'x', 'y']
+
+Layer #2: name='walls', type='tilelayer', id=2
+  Keys present: ['data', 'height', 'id', 'name', 'opacity', 'type', 'visible', 'width', 'x', 'y']
+
+Layer #3: name='walls2', type='tilelayer', id=4
+  Keys present: ['data', 'height', 'id', 'name', 'opacity', 'type', 'visible', 'width', 'x', 'y']
+
+Layer #4: name='zones', type='tilelayer', id=7
+  Keys present: ['data', 'height', 'id', 'name', 'opacity', 'type', 'visible', 'width', 'x', 'y']
+
+Layer #5: name='music', type='tilelayer', id=10
+  Keys present: ['data', 'height', 'id', 'name', 'opacity', 'type', 'visible', 'width', 'x', 'y']
+
+Layer #6: name='environment', type='objectgroup', id=3
+  Keys present: ['draworder', 'id', 'name', 'objects', 'opacity', 'type', 'visible', 'x', 'y']
+  Object Group draworder: topdown
+  Object Count: 96
+  Sample Object #1: {'gid': 2718, 'height': 101, 'id': 120, 'name': '', 'opacity': 1, 'properties': [{'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 218}, {'name': 'tableTop', 'type': 'bool', 'value': True}, {'name': 'texture', 'type': 'string', 'value': 'pub_table'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 218, 'x': 3904, 'y': 1728}
+  Sample Object #2: {'gid': 2718, 'height': 101, 'id': 121, 'name': '', 'opacity': 1, 'properties': [{'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 218}, {'name': 'tableTop', 'type': 'bool', 'value': True}, {'name': 'texture', 'type': 'string', 'value': 'pub_table'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 218, 'x': 3904, 'y': 1888}
+  Sample Object #3: {'gid': 2718, 'height': 101, 'id': 122, 'name': '', 'opacity': 1, 'properties': [{'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 218}, {'name': 'tableTop', 'type': 'bool', 'value': True}, {'name': 'texture', 'type': 'string', 'value': 'pub_table'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 218, 'x': 3744, 'y': 2048}
+
+Layer #7: name='items', type='objectgroup', id=5
+  Keys present: ['draworder', 'id', 'name', 'objects', 'opacity', 'type', 'visible', 'x', 'y']
+  Object Group draworder: topdown
+  Object Count: 62
+  Sample Object #1: {'gid': 2769, 'height': 58, 'id': 173, 'name': '', 'opacity': 1, 'properties': [{'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'key'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'name', 'type': 'string', 'value': 'Gold Key'}, {'name': 'texture', 'type': 'string', 'value': 'key'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 63, 'x': 3776, 'y': 3968}
+  Sample Object #2: {'gid': 2772, 'height': 58, 'id': 239, 'name': '', 'opacity': 1, 'properties': [{'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'ingot_iron'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'name', 'type': 'string', 'value': 'Iron Ingot'}, {'name': 'texture', 'type': 'string', 'value': 'ingot_iron'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 63, 'x': 5632, 'y': 3872}
+  Sample Object #3: {'gid': 2772, 'height': 58, 'id': 240, 'name': '', 'opacity': 1, 'properties': [{'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'ingot_iron'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'name', 'type': 'string', 'value': 'Iron Ingot'}, {'name': 'texture', 'type': 'string', 'value': 'ingot_iron'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 63, 'x': 5664, 'y': 3936}
+
+Layer #8: name='animals', type='objectgroup', id=9
+  Keys present: ['draworder', 'id', 'name', 'objects', 'opacity', 'type', 'visible', 'x', 'y']
+  Object Group draworder: topdown
+  Object Count: 10
+  Sample Object #1: {'gid': 4207, 'height': 198, 'id': 323, 'name': '', 'opacity': 1, 'properties': [{'name': 'gatherItem', 'type': 'string', 'value': 'fiber_wool'}, {'name': 'gatherTool', 'type': 'string', 'value': 'sheers'}, {'name': 'interactType', 'type': 'string', 'value': 'gather'}, {'name': 'isAnimal', 'type': 'bool', 'value': True}, {'name': 'moveSpeed', 'type': 'int', 'value': 30}, {'name': 'name', 'type': 'string', 'value': 'Sheep'}, {'name': 'species', 'type': 'string', 'value': 'sheep'}, {'name': 'texture', 'type': 'string', 'value': 'sheep'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 215, 'x': 6488, 'y': 3104}
+  Sample Object #2: {'gid': 4207, 'height': 198, 'id': 324, 'name': '', 'opacity': 1, 'properties': [{'name': 'gatherItem', 'type': 'string', 'value': 'fiber_wool'}, {'name': 'gatherTool', 'type': 'string', 'value': 'sheers'}, {'name': 'interactType', 'type': 'string', 'value': 'gather'}, {'name': 'isAnimal', 'type': 'bool', 'value': True}, {'name': 'moveSpeed', 'type': 'int', 'value': 30}, {'name': 'name', 'type': 'string', 'value': 'Sheep'}, {'name': 'species', 'type': 'string', 'value': 'sheep'}, {'name': 'texture', 'type': 'string', 'value': 'sheep'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 215, 'x': 6528, 'y': 3232}
+  Sample Object #3: {'gid': 4207, 'height': 198, 'id': 325, 'name': '', 'opacity': 1, 'properties': [{'name': 'gatherItem', 'type': 'string', 'value': 'fiber_wool'}, {'name': 'gatherTool', 'type': 'string', 'value': 'sheers'}, {'name': 'interactType', 'type': 'string', 'value': 'gather'}, {'name': 'isAnimal', 'type': 'bool', 'value': True}, {'name': 'moveSpeed', 'type': 'int', 'value': 30}, {'name': 'name', 'type': 'string', 'value': 'Sheep'}, {'name': 'species', 'type': 'string', 'value': 'sheep'}, {'name': 'texture', 'type': 'string', 'value': 'sheep'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 215, 'x': 6432, 'y': 3328}
+
+Layer #9: name='doors', type='objectgroup', id=8
+  Keys present: ['draworder', 'id', 'name', 'objects', 'opacity', 'type', 'visible', 'x', 'y']
+  Object Group draworder: topdown
+  Object Count: 9
+  Sample Object #1: {'gid': 4144, 'height': 288, 'id': 230, 'name': '', 'opacity': 1, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': True}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 96}, {'name': 'lightBlock', 'type': 'bool', 'value': True}, {'name': 'locked', 'type': 'bool', 'value': False}, {'name': 'texture', 'type': 'string', 'value': 'alpha_door'}], 'rotation': 0, 'type': 'door', 'visible': True, 'width': 96, 'x': 2816, 'y': 4256}
+  Sample Object #2: {'gid': 4144, 'height': 288, 'id': 231, 'name': '', 'opacity': 1, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': True}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 96}, {'name': 'lightBlock', 'type': 'bool', 'value': True}, {'name': 'locked', 'type': 'bool', 'value': False}, {'name': 'texture', 'type': 'string', 'value': 'alpha_door'}], 'rotation': 0, 'type': 'door', 'visible': True, 'width': 96, 'x': 3200, 'y': 3456}
+  Sample Object #3: {'gid': 4144, 'height': 288, 'id': 232, 'name': '', 'opacity': 1, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': True}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 96}, {'name': 'lightBlock', 'type': 'bool', 'value': True}, {'name': 'locked', 'type': 'bool', 'value': False}, {'name': 'texture', 'type': 'string', 'value': 'alpha_door'}], 'rotation': 0, 'type': 'door', 'visible': True, 'width': 96, 'x': 3424, 'y': 1504}
+
+Layer #10: name='buildings', type='objectgroup', id=6
+  Keys present: ['draworder', 'id', 'name', 'objects', 'opacity', 'type', 'visible', 'x', 'y']
+  Object Group draworder: topdown
+  Object Count: 5
+  Sample Object #1: {'gid': 2787, 'height': 638, 'id': 167, 'name': '', 'opacity': 1, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': False}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 480}, {'name': 'clearZone', 'type': 'string', 'value': 'blacksmith'}, {'name': 'texture', 'type': 'string', 'value': 'blacksmith_outside_02'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 480, 'x': 5440, 'y': 4160}
+  Sample Object #2: {'gid': 2788, 'height': 928, 'id': 168, 'name': '', 'opacity': 1, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': False}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 480}, {'name': 'clearZone', 'type': 'string', 'value': 'blacksmith'}, {'name': 'texture', 'type': 'string', 'value': 'blacksmith_outside_01'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 480, 'x': 5920, 'y': 4448}
+  Sample Object #3: {'gid': 2792, 'height': 576, 'id': 169, 'name': '', 'opacity': 1, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': False}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 1184}, {'name': 'clearZone', 'type': 'string', 'value': 'seamstress'}, {'name': 'texture', 'type': 'string', 'value': 'seamstress'}], 'rotation': 0, 'type': '', 'visible': True, 'width': 1184, 'x': 1984, 'y': 4256}
+
+==========================================
+ TILESETS COMPARISON 
+==========================================
+
+Tileset #1: name='alpha_tileset', firstgid=1
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  Tile defs sample: [{'id': 1, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': True}, {'name': 'lightBlock', 'type': 'bool', 'value': True}]}, {'id': 2, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': True}, {'name': 'lightBlock', 'type': 'bool', 'value': True}]}]
+
+Tileset #2: name='AutoMap Rules', firstgid=1351
+  Keys: ['columns', 'fillmode', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tilerendersize', 'tiles', 'tilewidth']
+  fillmode: preserve-aspect-fit
+  tilerendersize: grid
+  Qt Resource URI image: qrc:/automap-tiles.svg
+  Tile defs sample: [{'id': 3, 'properties': [{'name': 'MatchType', 'type': 'string', 'value': 'Empty'}]}, {'id': 1, 'properties': [{'name': 'MatchType', 'type': 'string', 'value': 'Ignore'}]}]
+
+Tileset #3: name='alpha_ground_set', firstgid=1356
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth', 'wangsets']
+  Tile defs sample: [{'id': 15, 'probability': 0}, {'id': 19, 'probability': 0.002}]
+
+Tileset #4: name='alpha_objects', firstgid=2706
+  Keys: ['columns', 'firstgid', 'grid', 'margin', 'name', 'objectalignment', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  objectalignment: bottomleft
+  grid: {'height': 1, 'orientation': 'orthogonal', 'width': 1}
+  Tile defs sample: [{'id': 0, 'image': 'cloth_roll_basket01.png', 'imageheight': 174, 'imagewidth': 52, 'properties': [{'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 30}, {'name': 'texture', 'type': 'string', 'value': 'cloth_roll_basket01'}]}, {'id': 1, 'image': 'cloth_shelf_01.png', 'imageheight': 229, 'imagewidth': 169, 'properties': [{'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 176}, {'name': 'texture', 'type': 'string', 'value': 'cloth_shelf_01'}]}]
+
+Tileset #5: name='alpha_items', firstgid=2769
+  Keys: ['columns', 'firstgid', 'grid', 'margin', 'name', 'objectalignment', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  objectalignment: bottom
+  grid: {'height': 1, 'orientation': 'orthogonal', 'width': 1}
+  Tile defs sample: [{'id': 0, 'image': 'key.png', 'imageheight': 58, 'imagewidth': 63, 'properties': [{'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'key'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'name', 'type': 'string', 'value': 'Gold Key'}, {'name': 'texture', 'type': 'string', 'value': 'key'}]}, {'id': 1, 'image': 'pants.png', 'imageheight': 60, 'imagewidth': 37, 'properties': [{'name': 'equipSlot', 'type': 'string', 'value': 'legs'}, {'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'pants'}, {'name': 'itemType', 'type': 'string', 'value': 'clothing'}, {'name': 'name', 'type': 'string', 'value': 'Blue Pants'}, {'name': 'texture', 'type': 'string', 'value': 'pants'}]}]
+
+Tileset #6: name='alpha_buildings', firstgid=2786
+  Keys: ['columns', 'firstgid', 'grid', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  grid: {'height': 1, 'orientation': 'orthogonal', 'width': 1}
+  Tile defs sample: [{'id': 1, 'image': 'blacksmith_outside_02.png', 'imageheight': 638, 'imagewidth': 480, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': False}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 480}, {'name': 'clearZone', 'type': 'string', 'value': 'blacksmith'}, {'name': 'texture', 'type': 'string', 'value': 'blacksmith_outside_02'}]}, {'id': 2, 'image': 'blacksmith_outside_01.png', 'imageheight': 928, 'imagewidth': 480, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': False}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 480}, {'name': 'clearZone', 'type': 'string', 'value': 'blacksmith'}, {'name': 'texture', 'type': 'string', 'value': 'blacksmith_outside_01'}]}]
+
+Tileset #7: name='alpha_zones', firstgid=2794
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  Tile defs sample: [{'id': 45, 'properties': [{'name': 'zone', 'type': 'string', 'value': 'blacksmith'}]}, {'id': 46, 'properties': [{'name': 'zone', 'type': 'string', 'value': 'great_ash'}]}]
+
+Tileset #8: name='alpha_door', firstgid=4144
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  Tile defs sample: [{'id': 0, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': True}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 96}, {'name': 'lightBlock', 'type': 'bool', 'value': True}, {'name': 'locked', 'type': 'bool', 'value': False}, {'name': 'texture', 'type': 'string', 'value': 'alpha_door'}], 'type': 'door'}, {'id': 1, 'properties': [{'name': 'blocked', 'type': 'bool', 'value': True}, {'name': 'bodyHeight', 'type': 'int', 'value': 15}, {'name': 'bodyOffsetY', 'type': 'int', 'value': 5}, {'name': 'bodyWidth', 'type': 'int', 'value': 96}, {'name': 'lightBlock', 'type': 'bool', 'value': True}, {'name': 'locked', 'type': 'bool', 'value': False}, {'name': 'texture', 'type': 'string', 'value': 'alpha_door'}], 'type': 'door'}]
+
+Tileset #9: name='alpha_bottle', firstgid=4147
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  Tile defs sample: [{'id': 0, 'properties': [{'name': 'isDynamic', 'type': 'bool', 'value': True}, {'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'alpha_bottle'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'maxUses', 'type': 'int', 'value': 10}, {'name': 'name', 'type': 'string', 'value': 'Alpha Bottle'}, {'name': 'texture', 'type': 'string', 'value': 'alpha_bottle'}]}, {'id': 1, 'properties': [{'name': 'isDynamic', 'type': 'bool', 'value': True}, {'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'alpha_bottle'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'maxUses', 'type': 'int', 'value': 10}, {'name': 'name', 'type': 'string', 'value': 'Alpha Bottle'}, {'name': 'texture', 'type': 'string', 'value': 'alpha_bottle'}]}]
+
+Tileset #10: name='alpha_thread', firstgid=4167
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  Tile defs sample: [{'id': 0, 'properties': [{'name': 'isDynamic', 'type': 'bool', 'value': True}, {'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'alpha_thread'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'maxUses', 'type': 'int', 'value': 10}, {'name': 'name', 'type': 'string', 'value': 'Alpha Thread'}, {'name': 'texture', 'type': 'string', 'value': 'alpha_thread'}]}, {'id': 1, 'properties': [{'name': 'isDynamic', 'type': 'bool', 'value': True}, {'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'alpha_thread'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'maxUses', 'type': 'int', 'value': 10}, {'name': 'name', 'type': 'string', 'value': 'Alpha Thread'}, {'name': 'texture', 'type': 'string', 'value': 'alpha_thread'}]}]
+
+Tileset #11: name='alpha_dye', firstgid=4187
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  Tile defs sample: [{'id': 0, 'properties': [{'name': 'isDynamic', 'type': 'bool', 'value': True}, {'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'alpha_dye'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'maxUses', 'type': 'int', 'value': 10}, {'name': 'name', 'type': 'string', 'value': 'Alpha Dye'}, {'name': 'texture', 'type': 'string', 'value': 'alpha_dye'}]}, {'id': 1, 'properties': [{'name': 'isDynamic', 'type': 'bool', 'value': True}, {'name': 'isItem', 'type': 'bool', 'value': True}, {'name': 'itemID', 'type': 'string', 'value': 'alpha_dye'}, {'name': 'itemType', 'type': 'string', 'value': 'object'}, {'name': 'maxUses', 'type': 'int', 'value': 10}, {'name': 'name', 'type': 'string', 'value': 'Alpha Dye'}, {'name': 'texture', 'type': 'string', 'value': 'alpha_dye'}]}]
+
+Tileset #12: name='sheep', firstgid=4207
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'objectalignment', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  objectalignment: bottom
+  Tile defs sample: [{'id': 0, 'properties': [{'name': 'gatherItem', 'type': 'string', 'value': 'fiber_wool'}, {'name': 'gatherTool', 'type': 'string', 'value': 'sheers'}, {'name': 'interactType', 'type': 'string', 'value': 'gather'}, {'name': 'isAnimal', 'type': 'bool', 'value': True}, {'name': 'moveSpeed', 'type': 'int', 'value': 30}, {'name': 'name', 'type': 'string', 'value': 'Sheep'}, {'name': 'species', 'type': 'string', 'value': 'sheep'}, {'name': 'texture', 'type': 'string', 'value': 'sheep'}]}, {'id': 1, 'properties': [{'name': 'gatherItem', 'type': 'string', 'value': 'fiber_wool'}, {'name': 'gatherTool', 'type': 'string', 'value': 'sheers'}, {'name': 'interactType', 'type': 'string', 'value': 'gather'}, {'name': 'isAnimal', 'type': 'bool', 'value': True}, {'name': 'moveSpeed', 'type': 'int', 'value': 30}, {'name': 'name', 'type': 'string', 'value': 'Sheep'}, {'name': 'species', 'type': 'string', 'value': 'sheep'}, {'name': 'texture', 'type': 'string', 'value': 'sheep'}]}]
+
+Tileset #13: name='tree_orange', firstgid=4243
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tilewidth']
+
+Tileset #14: name='rock_iron', firstgid=4249
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tilewidth']
+
+Tileset #15: name='music_zones', firstgid=4255
+  Keys: ['columns', 'firstgid', 'image', 'imageheight', 'imagewidth', 'margin', 'name', 'spacing', 'tilecount', 'tileheight', 'tiles', 'tilewidth']
+  Tile defs sample: [{'id': 45, 'properties': [{'name': 'fadeTimeMs', 'type': 'int', 'value': 1000}, {'name': 'proximityRadius', 'type': 'int', 'value': 192}, {'name': 'type', 'type': 'string', 'value': 'MusicZone'}, {'name': 'zoneKey', 'type': 'string', 'value': 'blacksmith'}]}, {'id': 46, 'properties': [{'name': 'fadeTimeMs', 'type': 'int', 'value': 1000}, {'name': 'proximityRadius', 'type': 'int', 'value': 192}, {'name': 'type', 'type': 'string', 'value': 'MusicZone'}, {'name': 'zoneKey', 'type': 'string', 'value': 'greatAsh'}]}]

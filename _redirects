@@ -1,0 +1,5 @@
+# Cloudflare Pages Canonical Domain & Routing Redirects
+# Redirect www to apex domain
+https://www.tileweaver.net/* https://tileweaver.net/:splat 301!
+http://www.tileweaver.net/* https://tileweaver.net/:splat 301!
+http://tileweaver.net/* https://tileweaver.net/:splat 301!

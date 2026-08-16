@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | TileWeaver</title>
+    <meta name="robots" content="noindex, follow">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32x32.png">
+    <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-950 text-slate-200 font-sans min-h-screen flex flex-col items-center justify-center p-6 select-none">
+    <div class="max-w-md w-full bg-slate-900 border border-slate-800 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden">
+        <!-- Background Ambient Glow -->
+        <div class="absolute -top-24 -left-24 w-48 h-48 bg-blue-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-48 h-48 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <!-- 404 Visual Icon -->
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-slate-800/80 border border-slate-700/80 rounded-2xl mb-6 shadow-inner text-blue-400">
+            <i class="ph-fill ph-map-pin-line text-4xl"></i>
+        </div>
+
+        <h1 class="text-3xl font-extrabold text-white tracking-tight mb-2">Outside Map Bounds</h1>
+        <p class="text-sm text-slate-400 mb-8 leading-relaxed">
+            The page or asset you are looking for does not exist or has been moved to another coordinate.
+        </p>
+
+        <div class="flex flex-col gap-3">
+            <a href="/" class="w-full inline-flex items-center justify-center gap-2 px-5 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-xl shadow-lg shadow-blue-600/25 transition-all transform active:scale-98">
+                <i class="ph ph-house text-base"></i> Return to TileWeaver Editor
+            </a>
+            <a href="https://github.com/kkmcl/TileWeaver" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-800 hover:bg-slate-700/80 text-slate-300 hover:text-white font-medium text-xs rounded-xl border border-slate-700 transition-colors">
+                <i class="ph ph-github-logo text-sm"></i> GitHub Repository
+            </a>
+        </div>
+
+        <div class="mt-8 pt-6 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400 font-mono">
+            <span>ERROR_CODE: 404_NOT_FOUND</span>
+            <span>tileweaver.net</span>
+        </div>
+    </div>
+</body>
+</html>

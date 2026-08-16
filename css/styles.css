@@ -1,0 +1,742 @@
+/**
+ * TileWeaver - Design System & Custom Styling Rules
+ * -------------------------------------------------
+ * This stylesheet complements Tailwind CSS by providing specialized rules for:
+ * 1. Pixel art canvas rendering (`image-rendering: pixelated`).
+ * 2. Dynamic 2D canvas checkerboard pattern for transparency background.
+ * 3. Custom dark mode scrollbar styling.
+ * 4. Active state highlights for tool buttons, layer stack items, and wizard slots.
+ * 5. Toast notification animation transitions.
+ */
+
+:root {
+    --bg-color: #0f172a;
+    --check-dark: #1e293b;
+    --check-light: #334155;
+}
+
+body {
+    background-color: var(--bg-color);
+    margin: 0;
+    overflow: hidden;
+    user-select: none;
+}
+
+/* ==========================================================================
+   1. Checkerboard Background Pattern
+   Used behind canvases to visually indicate transparent regions.
+   ========================================================================== */
+.checkerboard {
+    background-color: var(--check-dark);
+    background-image: 
+        linear-gradient(45deg, var(--check-light) 25%, transparent 25%, transparent 75%, var(--check-light) 75%, var(--check-light)),
+        linear-gradient(45deg, var(--check-light) 25%, transparent 25%, transparent 75%, var(--check-light) 75%, var(--check-light));
+    background-size: 32px 32px;
+    background-position: 0 0, 16px 16px;
+}
+
+/* ==========================================================================
+   2. Dark Theme Webkit Scrollbars
+   ========================================================================== */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #0f172a; 
+}
+::-webkit-scrollbar-thumb {
+    background: #475569; 
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #64748b; 
+}
+
+/* ==========================================================================
+   3. Canvas Pixel-Art Rendering
+   Ensures sharp, crisp pixel boundaries when tiles are scaled up or down.
+   ========================================================================== */
+canvas {
+    display: block;
+    image-rendering: pixelated; /* Essential for pixel-art level editors */
+}
+
+/* ==========================================================================
+   4. Tool Palette & UI State Classes
+   ========================================================================== */
+/* Active drawing tool button state */
+.btn-tool-active {
+    background-color: #3b82f6 !important;
+    border-color: #60a5fa !important;
+    color: white !important;
+}
+
+/* Active system mode toggle button state */
+.btn-toggle-active {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    border-color: #60a5fa !important;
+}
+
+/* Active Cliffside Brush Tool state */
+.btn-cliff-active {
+    background-color: #d97706 !important;
+    color: white !important;
+    border-color: #f59e0b !important;
+}
+
+/* Active layer stack item selection border */
+.layer-item.active {
+    background-color: #1e293b;
+    border-left: 4px solid #3b82f6;
+}
+
+/* Active Autotile Wizard slot selection highlight */
+.wizard-slot-active {
+    border-color: #10b981 !important;
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.4);
+    background-color: rgba(6, 78, 59, 0.4) !important;
+}
+
+/* Active Cliffside Wizard slot selection highlight */
+.cliff-slot-active {
+    border-color: #f59e0b !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4);
+    background-color: rgba(120, 53, 15, 0.4) !important;
+}
+
+/* Anatomical Cliff Structure Badges */
+.cliff-anatomical-badge {
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    shrink: 0;
+}
+.tier-badge-top {
+    background-color: rgba(217, 119, 6, 0.25);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.5);
+}
+.tier-badge-mid {
+    background-color: rgba(14, 116, 144, 0.25);
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.5);
+}
+.tier-badge-base {
+    background-color: rgba(16, 185, 129, 0.25);
+    color: #34d399;
+    border: 1px solid rgba(52, 211, 153, 0.5);
+}
+
+/* Active Autotile Wizard tab header button */
+.wizard-tab-active {
+    background-color: #10b981 !important;
+    color: white !important;
+    font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   5. Viewport Pan Cursors
+   ========================================================================== */
+.cursor-grab { cursor: grab; }
+.cursor-grabbing { cursor: grabbing; }
+
+/* ==========================================================================
+   6. Global Toast Notification Box Animations
+   ========================================================================== */
+#message-box {
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    transform: translateY(-20px);
+    opacity: 0;
+    pointer-events: none;
+}
+#message-box.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* ==========================================================================
+   7. Dual-Grid Mini 2x2 Corner Badges & Material Legend
+   ========================================================================== */
+.dualgrid-badge {
+    display: grid;
+    grid-template-columns: repeat(2, 7px);
+    grid-template-rows: repeat(2, 7px);
+    gap: 1.5px;
+    padding: 2px;
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+.dualgrid-corner-base {
+    background-color: var(--mat1-color, #10b981);
+    border-radius: 1px;
+    box-shadow: 0 0 2px var(--mat1-color, #10b981);
+    transition: background-color 0.2s ease;
+}
+.dualgrid-corner-overlay {
+    background-color: var(--mat2-color, #f59e0b);
+    border-radius: 1px;
+    box-shadow: 0 0 2px var(--mat2-color, #f59e0b);
+    transition: background-color 0.2s ease;
+}
+
+/* ==========================================================================
+   8. Terrain Swatch Card & Studio Accordion Styles (V2)
+   ========================================================================== */
+.swatch-card {
+    transition: all 0.15s ease-in-out;
+}
+.swatch-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+.swatch-card-active {
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.5), 0 4px 14px rgba(20, 184, 166, 0.2) !important;
+}
+
+/* Accordion Group & Header Styling */
+.swatch-accordion-group {
+    border: 1px solid rgba(51, 65, 85, 0.6);
+    border-radius: 0.5rem;
+    background-color: rgba(15, 23, 42, 0.6);
+    overflow: hidden;
+    transition: border-color 0.15s ease;
+    flex-shrink: 0;
+}
+.swatch-accordion-group:hover {
+    border-color: rgba(71, 85, 105, 0.8);
+}
+.swatch-accordion-header {
+    width: 100%;
+    padding: 0.35rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: rgba(30, 41, 59, 0.7);
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.15s ease;
+}
+.swatch-accordion-header:hover {
+    background-color: rgba(51, 65, 85, 0.7);
+}
+.swatch-accordion-caret {
+    transition: transform 0.2s ease;
+}
+.swatch-accordion-collapsed .swatch-accordion-caret {
+    transform: rotate(-90deg);
+}
+.swatch-accordion-collapsed .swatch-accordion-body {
+    display: none;
+}
+
+/* Swatch Card V2 Clean & Compact Layout */
+.swatch-card-v2 {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 0.3rem 0.45rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    background-color: rgba(15, 23, 42, 0.85);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    position: relative;
+}
+.swatch-card-v2:hover {
+    border-color: rgba(100, 116, 139, 0.9);
+    background-color: rgba(30, 41, 59, 0.95);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+.swatch-card-v2:hover .swatch-hover-action {
+    opacity: 1;
+    pointer-events: auto;
+}
+.swatch-hover-action {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+/* Active Highlight Rings Per Classification */
+.swatch-card-v2.active-ground, .swatch-card-compact.active-ground, .swatch-chip.active-ground {
+    border-color: #14b8a6 !important;
+    background-color: #0f172a !important;
+    box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.4), 0 4px 12px rgba(20, 184, 166, 0.15) !important;
+}
+.swatch-card-v2.active-cliff, .swatch-card-compact.active-cliff, .swatch-chip.active-cliff {
+    border-color: #f59e0b !important;
+    background-color: #0f172a !important;
+    box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.4), 0 4px 12px rgba(245, 158, 11, 0.15) !important;
+}
+.swatch-card-v2.active-wall, .swatch-card-compact.active-wall, .swatch-chip.active-wall {
+    border-color: #3b82f6 !important;
+    background-color: #0f172a !important;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.4), 0 4px 12px rgba(59, 130, 246, 0.15) !important;
+}
+
+/* Drag-and-Drop Priority Stack Styles */
+.swatch-card-v2[draggable="true"], .swatch-card-compact[draggable="true"] {
+    user-select: none;
+}
+.swatch-drag-handle {
+    cursor: grab;
+    color: #64748b;
+    transition: color 0.12s ease;
+}
+.swatch-drag-handle:hover {
+    color: #94a3b8;
+}
+.swatch-card-v2.dragging, .swatch-card-compact.dragging {
+    opacity: 0.4;
+    transform: scale(0.98);
+    border: 1px dashed #14b8a6 !important;
+}
+.swatch-drag-over-top {
+    border-top: 2px solid #14b8a6 !important;
+    box-shadow: 0 -3px 8px rgba(20, 184, 166, 0.4);
+}
+.swatch-drag-over-bottom {
+    border-bottom: 2px solid #14b8a6 !important;
+    box-shadow: 0 3px 8px rgba(20, 184, 166, 0.4);
+}
+
+/* View Density Mode: Compact List */
+.swatch-card-compact {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.35rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(51, 65, 85, 0.7);
+    background-color: rgba(15, 23, 42, 0.85);
+    cursor: pointer;
+    transition: all 0.12s ease;
+    position: relative;
+    height: 26px;
+}
+.swatch-card-compact:hover {
+    border-color: rgba(100, 116, 139, 0.9);
+    background-color: rgba(30, 41, 59, 0.95);
+}
+.swatch-card-compact:hover .swatch-hover-action {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* View Density Mode: Visual Chips Grid */
+.swatch-chips-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+    gap: 0.35rem;
+}
+.swatch-chip {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.35rem 0.25rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    background-color: rgba(15, 23, 42, 0.9);
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.12s ease;
+    position: relative;
+}
+.swatch-chip:hover {
+    transform: translateY(-1px);
+    border-color: rgba(100, 116, 139, 0.9);
+    background-color: rgba(30, 41, 59, 0.95);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+.swatch-chip:hover .swatch-hover-action {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* Viewport Top Centered Floating HUD Stack */
+.viewport-hud-stack {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.45rem;
+    z-index: 30;
+    pointer-events: none;
+    transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s ease;
+}
+
+.viewport-hud-stack.ribbon-fade {
+    opacity: 0.15 !important;
+    pointer-events: none !important;
+}
+
+/* Viewport Floating Active Swatch Ribbon HUD (Hotkeys 1-5) */
+.swatch-ribbon {
+    position: relative;
+    pointer-events: auto;
+    background: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(51, 65, 85, 0.85);
+    border-radius: 9999px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    transition: opacity 0.18s cubic-bezier(0.16, 1, 0.3, 1), transform 0.18s ease;
+}
+.swatch-ribbon.ribbon-fade {
+    opacity: 0.15 !important;
+    pointer-events: none !important;
+}
+.ribbon-slot {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.45rem;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    background-color: rgba(30, 41, 59, 0.6);
+    cursor: pointer;
+    transition: all 0.12s ease;
+}
+.ribbon-slot:hover {
+    background-color: rgba(51, 65, 85, 0.9);
+    border-color: rgba(100, 116, 139, 0.8);
+    transform: translateY(-1px);
+}
+.ribbon-slot.active-ground {
+    border-color: #14b8a6 !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    box-shadow: 0 0 0 1.5px rgba(20, 184, 166, 0.5) !important;
+}
+.ribbon-slot.active-cliff {
+    border-color: #f59e0b !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    box-shadow: 0 0 0 1.5px rgba(245, 158, 11, 0.5) !important;
+}
+.ribbon-slot.active-wall {
+    border-color: #3b82f6 !important;
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    box-shadow: 0 0 0 1.5px rgba(59, 130, 246, 0.5) !important;
+}
+.ribbon-hotkey-badge {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 8.5px;
+    font-weight: 700;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+    background-color: rgba(15, 23, 42, 0.9);
+    border: 1px solid rgba(71, 85, 105, 0.7);
+    color: #94a3b8;
+}
+
+/* Material Wizard Header Active Glow Rings */
+.mat1-card-active {
+    border-color: var(--mat1-color, #10b981) !important;
+    box-shadow: 0 0 0 2px var(--mat1-color, #10b981), 0 4px 14px var(--mat1-color, #10b981) !important;
+}
+.mat2-card-active {
+    border-color: var(--mat2-color, #f59e0b) !important;
+    box-shadow: 0 0 0 2px var(--mat2-color, #f59e0b), 0 4px 14px var(--mat2-color, #f59e0b) !important;
+}
+.mat3-card-active {
+    border-color: #a855f7 !important;
+    box-shadow: 0 0 0 2px #a855f7, 0 4px 14px rgba(168, 85, 247, 0.4) !important;
+}
+
+/* ==========================================================================
+   9. Cliff Elevation Tier Headers & 2x2 Micro-Badges
+   ========================================================================== */
+.tier-header-container {
+    width: 100%;
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+    padding-bottom: 0.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+.tier-header-top {
+    color: #fbbf24;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    items-center: center;
+    gap: 0.375rem;
+}
+.tier-header-mid {
+    color: #f59e0b;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    items-center: center;
+    gap: 0.375rem;
+}
+.tier-header-base {
+    color: #c084fc;
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    display: flex;
+    items-center: center;
+    gap: 0.375rem;
+}
+
+.badge-2x2-matrix {
+    display: grid;
+    grid-template-columns: repeat(2, 8px);
+    grid-template-rows: repeat(2, 8px);
+    gap: 1px;
+    padding: 2px;
+    background: #020617;
+    border: 1px solid #334155;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+.badge-2x2-matrix .mat-cell-1 {
+    background-color: #10b981;
+    border-radius: 1px;
+}
+.badge-2x2-matrix .mat-cell-2 {
+    background-color: #f59e0b;
+    border-radius: 1px;
+}
+.badge-2x2-matrix .mat-cell-3 {
+    background-color: #a855f7;
+    border-radius: 1px;
+}
+
+/* ==========================================================================
+   10. Resizable Sidebar & Drag Handle
+   ========================================================================== */
+.sidebar-resizer {
+    width: 5px;
+    height: 100%;
+    background-color: #1e293b;
+    border-left: 1px solid #334155;
+    border-right: 1px solid #0f172a;
+    cursor: col-resize;
+    z-index: 30;
+    transition: background-color 0.15s ease;
+    flex-shrink: 0;
+}
+.sidebar-resizer:hover, .sidebar-resizer.is-resizing {
+    background-color: #3b82f6;
+    border-color: #60a5fa;
+}
+
+/* Collapsed Sidebar Dock Mode */
+.sidebar-collapsed {
+    width: 3.5rem !important; /* 56px collapsed width */
+    min-width: 3.5rem !important;
+}
+.sidebar-collapsed .hide-on-collapse {
+    display: none !important;
+}
+
+/* ==========================================================================
+   11. Smart Contextual Viewport HUD
+   ========================================================================== */
+.hud-glass-panel {
+    background-color: rgba(15, 23, 42, 0.88);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(51, 65, 85, 0.8);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+/* Tool category tab active header */
+.tool-tab-active {
+    border-bottom: 2px solid #3b82f6 !important;
+    color: #f8fafc !important;
+    background-color: #1e293b !important;
+    font-weight: 700 !important;
+}
+
+/* ==========================================================================
+   12. Tileset Pop-Out Window & Bottom Dock Styles
+   ========================================================================== */
+.tileset-popout-window {
+    position: fixed;
+    z-index: 50;
+    background-color: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(51, 65, 85, 0.9);
+    border-radius: 0.5rem;
+    box-shadow: 0 20px 35px -5px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    resize: both;
+    min-width: 450px;
+    min-height: 320px;
+}
+
+.tileset-popout-header {
+    cursor: move;
+    user-select: none;
+}
+
+.tileset-bottom-dock {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 30;
+    background-color: rgba(15, 23, 42, 0.95);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid #334155;
+    box-shadow: 0 -10px 25px -5px rgba(0, 0, 0, 0.6);
+    display: flex;
+    flex-direction: column;
+    transition: height 0.15s ease-out;
+}
+
+.dock-resizer {
+    height: 5px;
+    width: 100%;
+    cursor: row-resize;
+    background: #1e293b;
+    border-top: 1px solid #334155;
+    transition: background-color 0.15s;
+}
+.dock-resizer:hover {
+    background: #3b82f6;
+}
+
+/* Right Live Tile Properties Inspector Panel */
+.right-inspector-panel {
+    width: 310px;
+    background-color: rgba(15, 23, 42, 0.96);
+    border-left: 1px solid #334155;
+    display: flex;
+    flex-direction: column;
+    z-index: 25;
+    transition: width 0.15s ease-out, min-width 0.15s ease-out;
+    overflow: hidden;
+}
+
+.right-inspector-panel.right-sidebar-collapsed {
+    width: 36px !important;
+    min-width: 36px !important;
+}
+
+.right-inspector-panel.right-sidebar-collapsed #right-inspector-header {
+    padding-left: 4px !important;
+    padding-right: 4px !important;
+    justify-content: center !important;
+}
+
+.right-inspector-panel.right-sidebar-collapsed .hide-on-collapse {
+    display: none !important;
+}
+
+.right-inspector-panel.right-sidebar-collapsed #right-inspector-body {
+    display: none !important;
+}
+
+/* ==========================================================================
+   10. Smart-Anchor Tile Variation Manager Styling
+   ========================================================================== */
+.input-var-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #1e293b;
+    outline: none;
+    border-radius: 9999px;
+}
+
+.input-var-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #14b8a6;
+    cursor: pointer;
+    border: 2px solid #042f2e;
+    box-shadow: 0 0 4px rgba(20, 184, 166, 0.6);
+    transition: transform 0.1s, background-color 0.1s;
+}
+
+.input-var-slider::-webkit-slider-thumb:hover {
+    transform: scale(1.2);
+    background: #2dd4bf;
+}
+
+.btn-var-preset {
+    transition: background-color 0.15s, color 0.15s, border-color 0.15s;
+}
+.btn-var-preset:hover {
+    background-color: #042f2e !important;
+    color: #5eead4 !important;
+    border-color: #0f766e !important;
+}
+
+/* ==========================================================================
+   11. Project Digital Asset Vault & Upload Wizard Styling
+   ========================================================================== */
+.asset-card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.asset-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px -2px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(59, 130, 246, 0.15);
+}
+
+.upload-choice-card {
+    transition: transform 0.12s ease, border-color 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
+}
+
+.upload-choice-card:hover {
+    transform: translateX(2px);
+}
+
+.bg-slate-750 {
+    background-color: #243248;
+}
+
+.border-slate-750 {
+    border-color: #243248;
+}
+
+.bg-slate-850 {
+    background-color: #162032;
+}
+
+/* Custom smooth scrollbar for Asset Vault */
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(15, 23, 42, 0.6);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(51, 65, 85, 0.8);
+    border-radius: 4px;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(100, 116, 139, 1);
+}
+
