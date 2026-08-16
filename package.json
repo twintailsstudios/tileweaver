@@ -19,6 +19,7 @@
   "author": "",
   "license": "MIT",
   "devDependencies": {
-    "@napi-rs/canvas": "^1.0.5"
+    "@napi-rs/canvas": "^1.0.5",
+    "wrangler": "^4.123.0"
   }
 }
