@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build and deployment logs / cache
+.wrangler/
+dist/
+build/
+.cache/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# AI Agent transcripts & internal metadata
+.agents/
+scratch/
+
+# OS metadata
+.DS_Store
+Thumbs.db
+desktop.ini

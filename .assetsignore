@@ -1,0 +1,19 @@
+# Cloudflare Static Assets Ignore File
+# Excludes dependencies, test harnesses, scripts, and build artifacts from static asset uploads
+
+node_modules/
+.git/
+.github/
+.agents/
+.wrangler/
+scripts/
+test/
+scratch/
+package.json
+package-lock.json
+wrangler.jsonc
+wrangler.json
+.assetsignore
+.gitignore
+*.log
+*.md
