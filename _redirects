@@ -1,5 +1,6 @@
-# Cloudflare Pages Canonical Domain & Routing Redirects
-# Redirect www to apex domain
-https://www.tileweaver.net/* https://tileweaver.net/:splat 301!
-http://www.tileweaver.net/* https://tileweaver.net/:splat 301!
-http://tileweaver.net/* https://tileweaver.net/:splat 301!
+# Cloudflare Static Asset Path Redirects
+# Format: /source-path /target-path [status-code]
+# Host/Domain-level redirects (such as www -> apex) are configured in Cloudflare Dashboard > Rules > Redirect Rules
+
+/editor / 301
+/app / 301
