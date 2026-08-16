@@ -30,7 +30,6 @@ const rootFiles = [
     'index.html',
     '404.html',
     '_headers',
-    '_redirects',
     'robots.txt',
     'sitemap.xml',
     'site.webmanifest',
