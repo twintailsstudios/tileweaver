@@ -245,7 +245,7 @@ function generateOGBanner() {
     // Domain Footer
     ctx.fillStyle = '#38bdf8';
     ctx.font = 'bold 18px sans-serif';
-    ctx.fillText('tileweaver.net', 0, 325);
+    ctx.fillText('www.tileweaver.net', 0, 325);
 
     ctx.restore();
 

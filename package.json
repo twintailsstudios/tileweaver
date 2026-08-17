@@ -2,7 +2,7 @@
   "name": "tileweaver",
   "version": "3.3.0",
   "description": "Professional Web RPG Map & Autotile Level Editor",
-  "homepage": "https://tileweaver.net",
+  "homepage": "https://www.tileweaver.net",
   "main": "index.html",
   "scripts": {
     "postinstall": "node scripts/build.js",
@@ -14,11 +14,24 @@
   },
   "keywords": [
     "tilemap",
+    "tilemap-editor",
+    "rpg-map-editor",
     "autotile",
+    "dual-grid",
     "dualgrid",
-    "rpgmaker",
-    "map-editor",
-    "canvas"
+    "marching-squares",
+    "level-editor",
+    "2d-level-editor",
+    "godot-tilemap",
+    "unity-tilemap",
+    "phaser-tilemap",
+    "tiled-tmj",
+    "tileset-extruder",
+    "battlemap-maker",
+    "vtt-maps",
+    "pixel-art",
+    "game-development",
+    "canvas-2d"
   ],
   "engines": {
     "node": ">=22.0.0"

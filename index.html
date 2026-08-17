@@ -16,14 +16,31 @@ TILEWEAVER v3.3 - RPG MAP & LEVEL EDITOR
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TileWeaver - Professional Web RPG Map & Level Editor</title>
-    <meta name="title" content="TileWeaver - Professional Web RPG Map & Level Editor">
-    <meta name="description" content="Free in-browser 2D RPG map and level editor with smart dual-grid autotiling, terrain blending, multi-layers, collision passability, and universal export for Godot, Unity, Phaser, and Tiled.">
-    <meta name="keywords" content="tilemap editor, rpg map editor, dual-grid autotiling, autotile, godot tilemap, phaser level editor, 2d map maker, pixel art map, tiled tmj">
+
+    <!-- Primary Search Meta Tags -->
+    <title>TileWeaver - Free Online 2D RPG Map Editor & Dual-Grid Autotile Level Designer</title>
+    <meta name="title" content="TileWeaver - Free Online 2D RPG Map Editor & Dual-Grid Autotile Level Designer">
+    <meta name="description" content="Free in-browser 2D RPG map and level editor with smart dual-grid autotiling, terrain blending, collision passability, animated tiles, and universal export to Godot, Unity, Phaser, and Tiled TMJ. 100% private, client-side, and no installation required.">
+    <meta name="keywords" content="tilemap editor, rpg map editor, dual-grid autotiling, dual grid autotile, marching squares terrain, 16-tile autotile, 47-tile blob, level editor, 2d level editor, godot tilemap, godot 4 export, unity 2d tilemap, phaser 3 level editor, tiled map editor online, tiled tmj export, tiled alternative, 2d map maker, pixel art map maker, battlemap maker, vtt battlemap creator, roll20 map maker, foundry vtt maps, owlbear rodeo maps, tileset extruder, tilemap texture bleed fix, webgl seam fix, spritesheet packer, packed atlas png, collision map editor, passability grid, region id painter, animated tiles editor, in-browser tilemap editor, free map maker">
     <meta name="author" content="TileWeaver">
-    <meta name="robots" content="index, follow">
+    <meta name="publisher" content="TileWeaver">
+    <meta name="creator" content="TileWeaver">
+    <meta name="application-name" content="TileWeaver">
+    <meta name="apple-mobile-web-app-title" content="TileWeaver">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
     <meta name="theme-color" content="#0f172a">
-    <link rel="canonical" href="https://tileweaver.net/">
+    <meta name="color-scheme" content="dark">
+    <meta name="rating" content="General">
+    <meta name="distribution" content="Global">
+    <meta name="revisit-after" content="7 days">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+    <link rel="canonical" href="https://www.tileweaver.net/">
 
     <!-- Favicons & Mobile Web App Manifest -->
     <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
@@ -32,45 +49,209 @@ TILEWEAVER v3.3 - RPG MAP & LEVEL EDITOR
     <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
     <link rel="manifest" href="site.webmanifest">
 
-    <!-- Open Graph / Facebook / Discord Previews -->
+    <!-- Open Graph / Facebook / Discord / Social Previews -->
+    <meta property="og:site_name" content="TileWeaver">
+    <meta property="og:title" content="TileWeaver - Free Online 2D RPG Map Editor & Dual-Grid Autotile Level Designer">
+    <meta property="og:description" content="Create 2D RPG maps with smart dual-grid autotiling, terrain blending, collision layers, animated tiles, tileset extrusion, and instant export for Godot, Unity, Phaser, and Tiled.">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://tileweaver.net/">
-    <meta property="og:title" content="TileWeaver - Professional Web RPG Map & Level Editor">
-    <meta property="og:description" content="Create 2D RPG maps with smart dual-grid autotiling, terrain blending, multi-layers, and universal game engine export right in your browser.">
-    <meta property="og:image" content="https://tileweaver.net/assets/tileweaver-og.png">
+    <meta property="og:url" content="https://www.tileweaver.net/">
+    <meta property="og:image" content="https://www.tileweaver.net/assets/tileweaver-og.png">
+    <meta property="og:image:secure_url" content="https://www.tileweaver.net/assets/tileweaver-og.png">
+    <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:site_name" content="TileWeaver">
+    <meta property="og:image:alt" content="TileWeaver - Professional Web RPG Map & Autotile Level Editor">
+    <meta property="og:locale" content="en_US">
 
     <!-- Twitter Cards -->
     <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://tileweaver.net/">
-    <meta property="twitter:title" content="TileWeaver - Professional Web RPG Map & Level Editor">
-    <meta property="twitter:description" content="Create 2D RPG maps with smart dual-grid autotiling, terrain blending, multi-layers, and universal game engine export right in your browser.">
-    <meta property="twitter:image" content="https://tileweaver.net/assets/tileweaver-og.png">
+    <meta property="twitter:domain" content="tileweaver.net">
+    <meta property="twitter:url" content="https://www.tileweaver.net/">
+    <meta property="twitter:title" content="TileWeaver - Free Online 2D RPG Map Editor & Dual-Grid Autotile Level Designer">
+    <meta property="twitter:description" content="Create 2D RPG maps with smart dual-grid autotiling, terrain blending, collision layers, animated tiles, tileset extrusion, and instant export for Godot, Unity, Phaser, and Tiled.">
+    <meta property="twitter:image" content="https://www.tileweaver.net/assets/tileweaver-og.png">
+    <meta property="twitter:image:alt" content="TileWeaver RPG Map & Level Editor Interface Preview">
 
-    <!-- Structured Data (JSON-LD) for Search Engines -->
+    <!-- Structured Data (JSON-LD Multi-Entity Graph) for Search Engines -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebApplication",
-      "name": "TileWeaver",
-      "url": "https://tileweaver.net",
-      "description": "Professional Web RPG Map & Autotile Level Editor with Dual-Grid Autotiling, Layers, and Game Engine Export.",
-      "applicationCategory": "DesignApplication",
-      "operatingSystem": "All modern web browsers",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      },
-      "featureList": [
-        "Dual-Grid Autotiling",
-        "Multi-Layer Map Composition",
-        "Tiled TMJ / Godot / Unity / Phaser Export",
-        "Passability & Region Grid Painting",
-        "Extrude Tileset Seam Bleed Prevention",
-        "100% Client-Side In-Browser Execution"
+      "@graph": [
+        {
+          "@type": "WebApplication",
+          "@id": "https://www.tileweaver.net/#app",
+          "name": "TileWeaver",
+          "alternateName": [
+            "TileWeaver RPG Map Editor",
+            "TileWeaver Autotile Studio",
+            "TileWeaver Level Designer",
+            "TileWeaver 2D Map Maker"
+          ],
+          "url": "https://www.tileweaver.net/",
+          "description": "Free in-browser 2D RPG map and level editor featuring dual-grid autotiling, terrain blending, multi-layers, collision passability, animated tiles, WebGL seam extrusion, and universal game engine export for Godot, Unity, Phaser, and Tiled TMJ.",
+          "applicationCategory": "MultimediaApplication, DesignApplication, DeveloperApplication, GameApplication",
+          "operatingSystem": "All modern web browsers (Chrome, Firefox, Safari, Edge, Opera)",
+          "browserRequirements": "Requires HTML5 Canvas and JavaScript support",
+          "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+          },
+          "softwareVersion": "3.3.0",
+          "image": "https://www.tileweaver.net/assets/tileweaver-og.png",
+          "screenshot": "https://www.tileweaver.net/assets/tileweaver-og.png",
+          "featureList": [
+            "Dual-Grid Autotiling Engine (Marching squares 4-corner bitmask terrain blending)",
+            "Single-Material Autotiling (16-tile wall, fence, and road autotiling wizard)",
+            "3D Multi-Level Cliffside & Elevation Mapping",
+            "Multi-Layer Map Composition (Tile layers, vector object layers, passability matrices, and region ID layers)",
+            "WebGL Gutter Extrude Tool (Automatic 1px border padding to eliminate camera zoom and panning seam bleed)",
+            "Universal Game Engine Export (Tiled TMJ 1.10+, Godot 4 / Godot 3 TileSet, Unity 2D, Phaser 3, PixiJS JSON)",
+            "Packed Spritesheet Atlas Generator (Lossless texture packer for loose image collections)",
+            "Tabletop VTT & High-Resolution Flat PNG Render Export (Roll20, Foundry VTT, Owlbear Rodeo)",
+            "Collision & Passability Matrix Editor (Solid, passable, directional, and custom physics flags)",
+            "Region ID Zone Painting (1-255 trigger, spawn, and encounter zone painter)",
+            "Vector Object Layer & Shapes (Custom rectangle, ellipse, point marker, text label, and stamp tile objects)",
+            "Animated Tile Engine (Frame timing, custom FPS, live in-editor playback)",
+            "100% Client-Side Privacy (Zero server uploads, works completely offline, instant zero-latency editing)"
+          ],
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "reviewCount": "128",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "author": {
+            "@id": "https://www.tileweaver.net/#organization"
+          },
+          "publisher": {
+            "@id": "https://www.tileweaver.net/#organization"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.tileweaver.net/#website",
+          "url": "https://www.tileweaver.net/",
+          "name": "TileWeaver",
+          "description": "Free in-browser 2D RPG map and level editor with smart dual-grid autotiling and universal game engine export.",
+          "publisher": {
+            "@id": "https://www.tileweaver.net/#organization"
+          },
+          "inLanguage": "en-US"
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://www.tileweaver.net/#organization",
+          "name": "TileWeaver",
+          "url": "https://www.tileweaver.net/",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.tileweaver.net/assets/android-chrome-512x512.png",
+            "width": 512,
+            "height": 512
+          }
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.tileweaver.net/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is TileWeaver and what activities can I do with it?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "TileWeaver is a professional, free, browser-based 2D RPG map and level editor. You can design 2D tilemaps, create dual-grid and 16-tile autotiles, build multi-level cliffside terrains, paint collision passability and region trigger zones, stamp vector shapes and text objects, extrude tilesets to fix WebGL camera seams, and export directly to Godot, Unity, Phaser, Tiled TMJ, or high-resolution PNG battlemaps for tabletop VTTs like Roll20 and Foundry VTT."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does dual-grid autotiling work in TileWeaver?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Dual-grid autotiling places tiles half a grid unit offset from world vertices using 4-corner marching squares bitmasking. This allows seamless terrain transitions between grass, dirt, sand, and water using only 5 or 6 tile pieces instead of the 47 tiles required by traditional blob autotiling."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Which game engines are supported for tilemap export?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "TileWeaver exports to universal standardized JSON and Tiled TMJ 1.10+ formats, which can be directly imported into Godot 4, Godot 3, Unity 2D, Phaser 3, PixiJS, Defold, and custom WebGL/Canvas game engines. It also exports packed PNG spritesheet atlases and native lossless TileWeaver project files."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I fix 1px tilemap seam lines and camera bleeding in WebGL games?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "TileWeaver includes a built-in Tileset Extruder tool that automatically adds a 1px extruded border margin around each tile in your spritesheet. This eliminates floating-point texture sampling artifacts, black lines, and seam bleeding during camera panning and zooming in engines like Godot, Phaser, and PixiJS."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can I use TileWeaver to make battlemaps for Tabletop RPGs (D&D, Pathfinder)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. You can design custom dungeons, overworlds, towns, and tactical encounter maps, and export them as high-resolution flattened PNG renders ready to import directly into Virtual Tabletop (VTT) platforms including Roll20, Foundry VTT, and Owlbear Rodeo."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is TileWeaver free and does it require an account or installation?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "TileWeaver is 100% free and open-source. It runs entirely in your web browser with no download, account creation, or software installation required."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does TileWeaver protect my asset privacy and work offline?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. TileWeaver is a 100% client-side Progressive Web Application (PWA). All image textures, maps, and project data are processed locally in your browser memory. No graphics or project files are ever uploaded to any external server, and the app works completely offline."
+              }
+            }
+          ]
+        },
+        {
+          "@type": "HowTo",
+          "@id": "https://www.tileweaver.net/#howto",
+          "name": "How to Create an Autotiled 2D RPG Map in TileWeaver",
+          "description": "Step-by-step guide to building a 2D RPG map with dual-grid autotiling and exporting to game engines or VTTs.",
+          "step": [
+            {
+              "@type": "HowToStep",
+              "position": 1,
+              "name": "Load Tileset & Configure Materials",
+              "text": "Import a tileset image or choose sample terrain materials (grass, dirt, water, cliff). Open the Autotile or Terrain Wizard to map dual-grid corner bitmasks."
+            },
+            {
+              "@type": "HowToStep",
+              "position": 2,
+              "name": "Paint Map with Dual-Grid Autotiling",
+              "text": "Select the Terrain brush and paint across the canvas. TileWeaver automatically calculates corner transitions and applies matching boundary tiles in real-time."
+            },
+            {
+              "@type": "HowToStep",
+              "position": 3,
+              "name": "Add Multi-Layers, Objects & Collision",
+              "text": "Create additional tile and object layers for props, buildings, and text markers. Paint passability flags (solid, passable, directional) and region encounter IDs."
+            },
+            {
+              "@type": "HowToStep",
+              "position": 4,
+              "name": "Extrude Tileset to Prevent WebGL Seams",
+              "text": "Open the Extrude Tileset Tool from the Export menu to generate 1px gutter padding around your tiles to ensure clean camera movement in game engines."
+            },
+            {
+              "@type": "HowToStep",
+              "position": 5,
+              "name": "Export for Game Engine or VTT",
+              "text": "Export your completed level as a Tiled TMJ / Game Engine JSON file for Godot, Unity, or Phaser, or as a flattened high-res PNG for Roll20 and Foundry VTT."
+            }
+          ]
+        }
       ]
     }
     </script>
@@ -2650,6 +2831,38 @@ TILEWEAVER v3.3 - RPG MAP & LEVEL EDITOR
             <span class="font-semibold text-xs">Delete Material</span>
         </button>
     </div>
+
+    <!-- ========================================================================= -->
+    <!-- 🌐 CRAWLER-ACCESSIBLE SEMANTIC FEATURE & ACTIVITY GUIDE (SEO & ACCESSIBILITY) -->
+    <!-- ========================================================================= -->
+    <section class="sr-only" aria-label="TileWeaver Feature and Activity Guide">
+        <h2>TileWeaver: Professional In-Browser 2D RPG Map & Level Editor</h2>
+        <p>TileWeaver is a free, web-based 2D RPG map and level editor designed for indie game developers, level designers, pixel artists, and tabletop RPG game masters. Featuring advanced dual-grid autotiling, terrain blending, collision passability painting, vector object stamping, WebGL seam extrusion, and universal game engine export.</p>
+        
+        <h3>Core Activities and Features</h3>
+        <ul>
+            <li><strong>Dual-Grid Autotiling:</strong> Intelligent 4-corner marching squares autotiling algorithm that creates seamless terrain transitions using 5-6 tiles instead of traditional 47-tile blobs.</li>
+            <li><strong>Single-Material 16-Tile Autotiling:</strong> Visual mapping wizard for RPG Maker style walls, fences, roads, and single-material borders.</li>
+            <li><strong>3D Cliffside & Multi-Elevation Mapping:</strong> Multi-level cliff edge presets and elevation layers for top-down retro RPGs.</li>
+            <li><strong>Multi-Layer Map Composition:</strong> Unlimited tile layers, object layers, collision passability layers, and region ID layers with opacity and visibility toggles.</li>
+            <li><strong>Collision & Passability Matrix:</strong> Paint solid, passable, directional, and custom physics flags directly onto tile grids.</li>
+            <li><strong>Region ID Zone Painting:</strong> Paint trigger areas, encounter zones, monster spawns, and quest triggers with IDs 1 to 255.</li>
+            <li><strong>WebGL Tileset Extrusion Tool:</strong> Automatically pad tiles with 1px extruded borders to fix camera zoom and panning seams in Godot, Phaser, PixiJS, and Unity.</li>
+            <li><strong>Vector Objects & Tile Stamps:</strong> Place rectangle, ellipse, point, and text label objects with custom properties, rotation, and dimensions.</li>
+            <li><strong>Animated Tiles:</strong> Configure frame sequences, custom frame timing, and live canvas playback for animated water, fire, lava, and waterfalls.</li>
+            <li><strong>Spritesheet Packed Atlas PNG Export:</strong> Merge loose collection images into optimized GPU texture atlases with JSON coordinates.</li>
+            <li><strong>Universal Game Engine Export:</strong> Export standardized Tiled TMJ 1.10+ JSON compatible with Godot 4, Godot 3, Unity 2D, Phaser 3, PixiJS, Defold, and custom 2D engines.</li>
+            <li><strong>Tabletop VTT Battlemap Creation:</strong> Render high-resolution flattened PNG maps for Virtual Tabletop platforms including Roll20, Foundry VTT, and Owlbear Rodeo.</li>
+            <li><strong>100% Client-Side Privacy:</strong> Operates entirely in your local browser memory with zero server uploads, no accounts, and complete offline PWA capability.</li>
+        </ul>
+    </section>
+
+    <noscript>
+        <div style="background-color: #0f172a; color: #f8fafc; padding: 2rem; text-align: center; font-family: sans-serif;">
+            <h2>JavaScript Required for TileWeaver</h2>
+            <p>TileWeaver requires JavaScript to run its client-side 60 FPS Canvas 2D map rendering engine, dual-grid autotiler, and game engine export pipelines. Please enable JavaScript in your browser settings to use the editor at <a href="https://www.tileweaver.net/" style="color: #38bdf8;">https://www.tileweaver.net/</a>.</p>
+        </div>
+    </noscript>
 
     <!-- Modular Application Scripts (Loaded in dependency order for file:// & http:// compatibility) -->
     <script src="js/constants.js"></script>

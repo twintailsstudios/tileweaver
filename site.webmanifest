@@ -1,14 +1,18 @@
 {
-  "name": "TileWeaver - RPG Map & Level Editor",
+  "id": "https://www.tileweaver.net/",
+  "name": "TileWeaver - 2D RPG Map & Autotile Level Editor",
   "short_name": "TileWeaver",
-  "description": "Professional Web RPG Map & Autotile Level Editor with Dual-Grid Autotiling, Layers, and Game Engine Export.",
-  "start_url": "/",
+  "description": "Free in-browser 2D RPG map and level editor with smart dual-grid autotiling, terrain blending, multi-layers, collision passability, and universal game engine export.",
+  "start_url": "https://www.tileweaver.net/",
   "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "any",
   "background_color": "#0f172a",
   "theme_color": "#0f172a",
-  "categories": ["developer tools", "games", "productivity"],
+  "categories": ["developer tools", "games", "productivity", "graphics & design", "entertainment"],
   "icons": [
     {
       "src": "/assets/favicon-32x32.png",
@@ -35,6 +39,36 @@
       "src": "/assets/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New RPG Map",
+      "short_name": "New Map",
+      "description": "Start designing a new 2D tilemap or level",
+      "url": "/#new",
+      "icons": [{ "src": "/assets/favicon-32x32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "Autotile Wizard",
+      "short_name": "Autotile",
+      "description": "Setup dual-grid and autotile rules",
+      "url": "/#autotile",
+      "icons": [{ "src": "/assets/favicon-32x32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "Extrude Tileset Tool",
+      "short_name": "Extrude",
+      "description": "Fix 1px WebGL texture bleeding & camera seams",
+      "url": "/#extrude",
+      "icons": [{ "src": "/assets/favicon-32x32.png", "sizes": "32x32" }]
+    },
+    {
+      "name": "Import Map / JSON",
+      "short_name": "Import",
+      "description": "Import Tiled TMJ or TileWeaver JSON project",
+      "url": "/#import",
+      "icons": [{ "src": "/assets/favicon-32x32.png", "sizes": "32x32" }]
     }
   ]
 }
