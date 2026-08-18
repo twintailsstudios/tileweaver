@@ -253,7 +253,7 @@
                         let matchedTs = (obj.tilesetId && tilesetMap.has(obj.tilesetId)) 
                             ? tilesetMap.get(obj.tilesetId) 
                             : null;
-                        if (!matchedTs) {
+                        if (!matchedTs && !obj.tilesetId) {
                             matchedTs = window.TileWeaver.stateModule ? window.TileWeaver.stateModule.getTilesetForGid(obj.gid) : defaultTileset;
                         }
 
@@ -279,6 +279,7 @@
 
                             if (matchedTs.isCollection && matchedTs.images) {
                                 const imgObj = (obj.imageId ? matchedTs.images.find(img => img.id === obj.imageId) : null) ||
+                                               (obj.localTileId !== undefined ? matchedTs.images.find(img => img.tileId === obj.localTileId) : null) ||
                                                matchedTs.images.find(img => img.tileId === localId) ||
                                                matchedTs.images.find(img => img.id === localId) ||
                                                matchedTs.images[localId] ||
@@ -293,13 +294,22 @@
                                 }
                             } else if (matchedTs.image) {
                                 imgEl = matchedTs.image;
-                                const tsCols = matchedTs.columns || Math.floor((imgEl.width - (matchedTs.margin || 0)) / (state.TILE_SIZE + (matchedTs.spacing || 0))) || 1;
+                                const tw = matchedTs.tilewidth || state.TILE_SIZE;
+                                const th = matchedTs.tileheight || state.TILE_SIZE;
                                 const margin = matchedTs.margin || 0;
                                 const spacing = matchedTs.spacing || 0;
-                                const tx = localId % tsCols;
-                                const ty = Math.floor(localId / tsCols);
-                                sourceX = margin + tx * (state.TILE_SIZE + spacing);
-                                sourceY = margin + ty * (state.TILE_SIZE + spacing);
+                                const tsCols = matchedTs.columns || Math.max(1, Math.floor((imgEl.width - margin) / (tw + spacing))) || 1;
+                                let tx = obj.tx;
+                                let ty = obj.ty;
+                                if (tx === undefined || ty === undefined) {
+                                    const localTileId = obj.localTileId !== undefined ? obj.localTileId : localId;
+                                    tx = localTileId % tsCols;
+                                    ty = Math.floor(localTileId / tsCols);
+                                }
+                                sourceX = margin + tx * (tw + spacing);
+                                sourceY = margin + ty * (th + spacing);
+                                sourceW = tw;
+                                sourceH = th;
                             }
 
                             if (imgEl && imgEl.width > 0) {
@@ -427,7 +437,9 @@
                         let boundsY = obj.y;
 
                         if (obj.gid && obj.gid > 0) {
-                            const matchedTs = window.TileWeaver.stateModule ? window.TileWeaver.stateModule.getTilesetForGid(obj.gid) : null;
+                            const matchedTs = (obj.tilesetId && tilesetMap.has(obj.tilesetId))
+                                ? tilesetMap.get(obj.tilesetId)
+                                : (window.TileWeaver.stateModule ? window.TileWeaver.stateModule.getTilesetForGid(obj.gid) : null);
                             const align = (obj.alignment || (matchedTs ? matchedTs.objectalignment : null) || 'bottomleft').toLowerCase();
                             if (align === 'bottom' || align === 'bottomcenter') { boundsX = obj.x - boundsW / 2; boundsY = obj.y - boundsH; }
                             else if (align === 'bottomright') { boundsX = obj.x - boundsW; boundsY = obj.y - boundsH; }

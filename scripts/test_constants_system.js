@@ -30,12 +30,15 @@ console.log('  ✔ Universal isomorphic bootstrapping & exports verified cleanly
 
 // ▶ TEST 2: Core Engine Parameters & Invariant Bounds
 console.log('▶ TEST 2: Core Engine Parameters & Invariant Bounds');
+const expectedPkgVersion = require('../package.json').version;
+assert.strictEqual(constants.APP_VERSION, expectedPkgVersion, `APP_VERSION must match package.json (${expectedPkgVersion})`);
+assert.strictEqual(constants.VERSION, expectedPkgVersion, `VERSION must match package.json (${expectedPkgVersion})`);
 assert.strictEqual(constants.MAX_HISTORY, 50, 'MAX_HISTORY must equal 50');
 assert.strictEqual(constants.DEFAULT_TILE_SIZE, 32, 'DEFAULT_TILE_SIZE must equal 32');
 assert.strictEqual(constants.DEFAULT_MAP_WIDTH, 30, 'DEFAULT_MAP_WIDTH must equal 30');
 assert.strictEqual(constants.DEFAULT_MAP_HEIGHT, 20, 'DEFAULT_MAP_HEIGHT must equal 20');
 assert.strictEqual(constants.CLIFF_7X5_MATRIX, null, 'CLIFF_7X5_MATRIX must be null for backward compatibility');
-console.log('  ✔ Engine invariants (MAX_HISTORY=50, DEFAULT_TILE_SIZE=32, DEFAULT_MAP=30x20) verified!\n');
+console.log(`  ✔ Engine invariants (APP_VERSION=${expectedPkgVersion}, MAX_HISTORY=50, DEFAULT_TILE_SIZE=32, DEFAULT_MAP=30x20) verified!\n`);
 
 // ▶ TEST 3: Deep Immutability (deepFreeze) Verification
 console.log('▶ TEST 3: Deep Immutability (deepFreeze) Verification');

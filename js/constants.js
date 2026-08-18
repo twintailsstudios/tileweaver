@@ -55,7 +55,25 @@
         return obj;
     }
 
+    let appReleaseVersion = '3.3.1';
+    if (typeof require !== 'undefined') {
+        try {
+            const pkg = require('../package.json');
+            if (pkg && pkg.version) {
+                appReleaseVersion = String(pkg.version);
+            }
+        } catch (e) {
+            // Standalone or browser fallback
+        }
+    }
+
     const constantsObj = {
+        /** Authoritative application release version */
+        APP_VERSION: appReleaseVersion,
+
+        /** Backward compatibility alias for APP_VERSION */
+        VERSION: appReleaseVersion,
+
         /** Maximum snapshots stored in the undo/redo history stack (caps heap memory) */
         MAX_HISTORY: 50,
 

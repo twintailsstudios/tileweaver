@@ -8,39 +8,61 @@
 const assert = require('assert');
 
 // Mock browser environment for headless Node.js testing
-const createMockElement = () => ({
-    width: 32,
-    height: 32,
-    style: { setProperty: () => {}, backgroundColor: '' },
-    classList: { add: () => {}, remove: () => {}, toggle: () => {} },
-    appendChild: () => {},
-    addEventListener: () => {},
-    querySelector: () => null,
-    querySelectorAll: () => [],
-    value: '',
-    innerHTML: '',
-    textContent: '',
-    getContext: () => ({
-        clearRect: () => {},
-        drawImage: () => {},
-        getImageData: () => ({ data: new Uint8ClampedArray(4 * 32 * 32) }),
-        fillRect: () => {},
-        strokeRect: () => {},
-        beginPath: () => {},
-        moveTo: () => {},
-        lineTo: () => {},
-        stroke: () => {},
-        fill: () => {},
-        measureText: () => ({ width: 20 }),
-        fillText: () => {},
-        roundRect: () => {}
-    })
-});
+const elementsCache = new Map();
+
+const createMockElement = (id = '') => {
+    let classes = new Set();
+    return {
+        id,
+        width: 32,
+        height: 32,
+        style: { setProperty: () => {}, backgroundColor: '' },
+        get className() {
+            return Array.from(classes).join(' ');
+        },
+        set className(val) {
+            classes = new Set(typeof val === 'string' ? val.split(/\s+/).filter(Boolean) : []);
+        },
+        classList: {
+            add: (...cls) => cls.forEach(c => c && classes.add(c)),
+            remove: (...cls) => cls.forEach(c => classes.delete(c)),
+            contains: (c) => classes.has(c),
+            toggle: (c) => classes.has(c) ? classes.delete(c) : classes.add(c)
+        },
+        appendChild: () => {},
+        addEventListener: () => {},
+        querySelector: () => null,
+        querySelectorAll: () => [],
+        value: '',
+        innerHTML: '',
+        textContent: '',
+        getContext: () => ({
+            clearRect: () => {},
+            drawImage: () => {},
+            getImageData: () => ({ data: new Uint8ClampedArray(4 * 32 * 32) }),
+            fillRect: () => {},
+            strokeRect: () => {},
+            beginPath: () => {},
+            moveTo: () => {},
+            lineTo: () => {},
+            stroke: () => {},
+            fill: () => {},
+            measureText: () => ({ width: 20 }),
+            fillText: () => {},
+            roundRect: () => {}
+        })
+    };
+};
 
 global.window = {};
 global.document = {
-    getElementById: (id) => createMockElement(),
-    createElement: (tag) => createMockElement(),
+    getElementById: (id) => {
+        if (!elementsCache.has(id)) {
+            elementsCache.set(id, createMockElement(id));
+        }
+        return elementsCache.get(id);
+    },
+    createElement: (tag) => createMockElement(tag),
     querySelector: () => null,
     querySelectorAll: () => []
 };
@@ -228,6 +250,91 @@ window.TileWeaver.stateModule.calculateVariationRates(testVars);
 assert.strictEqual(testVars[0].rate, 50, 'Base anchor rate should auto-balance to 100 - (30 + 20) = 50%');
 console.log('  ✔ Variation percentage rates auto-balance base anchor precisely!');
 
+// TEST 5: Preset Button Visibility & Toggle Desynchronization Guard
+console.log('\n▶ TEST 5: Preset Button Visibility & Toggle Desynchronization Guard');
+assert.strictEqual(typeof wizard.updateTerrainPresetButtonsUI, 'function', 'updateTerrainPresetButtonsUI must be exported');
+assert.strictEqual(typeof wizard.toggleTerrainPresetPlacement, 'function', 'toggleTerrainPresetPlacement must be exported');
+
+const btnOverlay = document.getElementById('btn-terrain-auto-overlay');
+const btnDualGrid = document.getElementById('btn-terrain-auto-dualgrid');
+const btnCliff = document.getElementById('btn-terrain-auto-cliff7x6');
+const btnWall = document.getElementById('btn-terrain-auto-wall9x3');
+
+// 5A. Ground Mode Initial Visibility
+wizard.openTerrainWizard();
+assert.strictEqual(btnOverlay.classList.contains('hidden'), false, 'Ground mode: Overlay button must be visible');
+assert.strictEqual(btnDualGrid.classList.contains('hidden'), false, 'Ground mode: Dual-Grid button must be visible');
+assert.strictEqual(btnCliff.classList.contains('hidden'), true, 'Ground mode: Cliff button must be hidden');
+assert.strictEqual(btnWall.classList.contains('hidden'), true, 'Ground mode: Wall button must be hidden');
+console.log('  ✔ Ground mode preset button initial visibility verified.');
+
+// 5B. Single Click Activates Preset
+wizard.toggleTerrainPresetPlacement('overlay');
+assert.strictEqual(state.terrainPresetPlacementActive, true, 'Single click must activate preset mode');
+assert.strictEqual(state.presetPlacementType, 'overlay', 'Active preset must be overlay');
+assert.strictEqual(btnOverlay.classList.contains('animate-pulse'), true, 'Active preset button must have pulse styling');
+assert.strictEqual(btnCliff.classList.contains('hidden'), true, 'Cliff button must remain hidden during active overlay placement');
+assert.strictEqual(btnWall.classList.contains('hidden'), true, 'Wall button must remain hidden during active overlay placement');
+console.log('  ✔ Single click activation and pulse highlight verified.');
+
+// 5C. Second Click Toggles Off & Retains Invariant Visibility
+wizard.toggleTerrainPresetPlacement('overlay');
+assert.strictEqual(state.terrainPresetPlacementActive, false, 'Second click must deactivate preset mode');
+assert.strictEqual(btnOverlay.classList.contains('animate-pulse'), false, 'Deactivated button must remove pulse styling');
+assert.strictEqual(btnOverlay.classList.contains('hidden'), false, 'Overlay button must remain visible');
+assert.strictEqual(btnDualGrid.classList.contains('hidden'), false, 'Dual-Grid button must remain visible');
+assert.strictEqual(btnCliff.classList.contains('hidden'), true, 'Cliff button must NOT be unhidden when clicking overlay button twice');
+assert.strictEqual(btnWall.classList.contains('hidden'), true, 'Wall button must NOT be unhidden when clicking overlay button twice');
+console.log('  ✔ Second click deactivation preserves hidden status of other tab buttons.');
+
+// 5D. Cross-Preset Switching within Ground Tab
+wizard.toggleTerrainPresetPlacement('overlay');
+assert.strictEqual(state.presetPlacementType, 'overlay');
+wizard.toggleTerrainPresetPlacement('dualgrid');
+assert.strictEqual(state.terrainPresetPlacementActive, true, 'Clicking different preset button should switch, not close');
+assert.strictEqual(state.presetPlacementType, 'dualgrid', 'Preset placement type should update to dualgrid');
+assert.strictEqual(btnDualGrid.classList.contains('animate-pulse'), true, 'DualGrid button should pulse');
+assert.strictEqual(btnOverlay.classList.contains('animate-pulse'), false, 'Overlay button should no longer pulse');
+assert.strictEqual(btnCliff.classList.contains('hidden'), true, 'Cliff button must remain hidden');
+assert.strictEqual(btnWall.classList.contains('hidden'), true, 'Wall button must remain hidden');
+wizard.toggleTerrainPresetPlacement('dualgrid'); // Deactivate
+assert.strictEqual(state.terrainPresetPlacementActive, false);
+console.log('  ✔ Cross-preset switching operates seamlessly within Ground tab.');
+
+// 5E. Cliffside Set Tab Mode & Double-Click Test
+wizard.setTerrainWizardMode('cliff');
+assert.strictEqual(btnCliff.classList.contains('hidden'), false, 'Cliff mode: Cliff button must be visible');
+assert.strictEqual(btnOverlay.classList.contains('hidden'), true, 'Cliff mode: Overlay button must be hidden');
+assert.strictEqual(btnDualGrid.classList.contains('hidden'), true, 'Cliff mode: Dual-Grid button must be hidden');
+assert.strictEqual(btnWall.classList.contains('hidden'), true, 'Cliff mode: Wall button must be hidden');
+
+wizard.toggleTerrainPresetPlacement('cliff7x6'); // Click 1
+assert.strictEqual(state.terrainPresetPlacementActive, true);
+wizard.toggleTerrainPresetPlacement('cliff7x6'); // Click 2
+assert.strictEqual(state.terrainPresetPlacementActive, false);
+assert.strictEqual(btnCliff.classList.contains('hidden'), false, 'Cliff button must remain visible in Cliff mode');
+assert.strictEqual(btnOverlay.classList.contains('hidden'), true, 'Overlay button must remain hidden in Cliff mode after double click');
+assert.strictEqual(btnDualGrid.classList.contains('hidden'), true, 'Dual-Grid button must remain hidden in Cliff mode after double click');
+assert.strictEqual(btnWall.classList.contains('hidden'), true, 'Wall button must remain hidden in Cliff mode after double click');
+console.log('  ✔ Cliff mode tab visibility and double-click toggle verified.');
+
+// 5F. Wall / Fence Set Tab Mode & Double-Click Test
+wizard.setTerrainWizardMode('wall');
+assert.strictEqual(btnWall.classList.contains('hidden'), false, 'Wall mode: Wall button must be visible');
+assert.strictEqual(btnOverlay.classList.contains('hidden'), true, 'Wall mode: Overlay button must be hidden');
+assert.strictEqual(btnDualGrid.classList.contains('hidden'), true, 'Wall mode: Dual-Grid button must be hidden');
+assert.strictEqual(btnCliff.classList.contains('hidden'), true, 'Wall mode: Cliff button must be hidden');
+
+wizard.toggleTerrainPresetPlacement('wall9x3'); // Click 1
+assert.strictEqual(state.terrainPresetPlacementActive, true);
+wizard.toggleTerrainPresetPlacement('wall9x3'); // Click 2
+assert.strictEqual(state.terrainPresetPlacementActive, false);
+assert.strictEqual(btnWall.classList.contains('hidden'), false, 'Wall button must remain visible in Wall mode');
+assert.strictEqual(btnOverlay.classList.contains('hidden'), true, 'Overlay button must remain hidden in Wall mode after double click');
+assert.strictEqual(btnDualGrid.classList.contains('hidden'), true, 'Dual-Grid button must remain hidden in Wall mode after double click');
+assert.strictEqual(btnCliff.classList.contains('hidden'), true, 'Cliff button must remain hidden in Wall mode after double click');
+console.log('  ✔ Wall mode tab visibility and double-click toggle verified.');
+
 console.log('\n===============================================================');
-console.log('🎉 ALL AUTOTILE WIZARD TESTS PASSED PERFECTLY (4/4)!');
+console.log('🎉 ALL AUTOTILE WIZARD TESTS PASSED PERFECTLY (5/5)!');
 console.log('===============================================================');

@@ -147,7 +147,25 @@
 
                     // Resolve object GID / Tileset ID / Image ID to tileset palette
                     let matchedTs = null;
-                    if (clickedObj.gid && clickedObj.gid > 0) {
+                    if (clickedObj.tilesetId) {
+                        const tsIdx = state.tilesets.findIndex(t => t.id === clickedObj.tilesetId);
+                        if (tsIdx >= 0) {
+                            state.activeTilesetIndex = tsIdx;
+                            matchedTs = state.tilesets[tsIdx];
+                            if (matchedTs.isCollection && clickedObj.imageId) {
+                                matchedTs.activeImageId = clickedObj.imageId;
+                            } else if (!matchedTs.isCollection) {
+                                const tsCols = matchedTs.columns || Math.max(1, Math.floor((matchedTs.image ? matchedTs.image.width : 160) / (matchedTs.tilewidth || tileSize)));
+                                if (clickedObj.tx !== undefined && clickedObj.ty !== undefined) {
+                                    state.selectedStamp = { col: clickedObj.tx, row: clickedObj.ty, width: 1, height: 1 };
+                                } else if (clickedObj.localTileId !== undefined) {
+                                    state.selectedStamp = { col: clickedObj.localTileId % tsCols, row: Math.floor(clickedObj.localTileId / tsCols), width: 1, height: 1 };
+                                }
+                            }
+                        }
+                    }
+
+                    if (!matchedTs && clickedObj.gid && clickedObj.gid > 0) {
                         const rawGidWithFlags = clickedObj.gid;
                         const gid = (rawGidWithFlags >>> 0) & 0x1FFFFFFF;
                         for (let tsIdx = state.tilesets.length - 1; tsIdx >= 0; tsIdx--) {
@@ -168,15 +186,6 @@
                                     state.selectedStamp = { col: tx, row: ty, width: 1, height: 1 };
                                 }
                                 break;
-                            }
-                        }
-                    } else if (clickedObj.tilesetId) {
-                        const tsIdx = state.tilesets.findIndex(t => t.id === clickedObj.tilesetId);
-                        if (tsIdx >= 0) {
-                            state.activeTilesetIndex = tsIdx;
-                            matchedTs = state.tilesets[tsIdx];
-                            if (matchedTs.isCollection && clickedObj.imageId) {
-                                matchedTs.activeImageId = clickedObj.imageId;
                             }
                         }
                     }
@@ -950,6 +959,12 @@
 
                         if (gidVal) {
                             pushHistoryState();
+                            const isColl = Boolean(ts.isCollection && imgObj);
+                            const stampCol = state.selectedStamp ? state.selectedStamp.col : 0;
+                            const stampRow = state.selectedStamp ? state.selectedStamp.row : 0;
+                            const tsCols = ts.columns || (ts.image ? Math.max(1, Math.floor((ts.image.width - (ts.margin || 0)) / ((ts.tilewidth || state.TILE_SIZE) + (ts.spacing || 0)))) : 1);
+                            const localTileId = isColl ? (imgObj.tileId !== undefined ? imgObj.tileId : 0) : (stampRow * tsCols + stampCol);
+
                             const newObj = window.TileWeaver.objectInspector.createObjectOnActiveLayer({
                                 name: objName,
                                 type: objType,
@@ -960,7 +975,10 @@
                                 gid: gidVal,
                                 alignment: alignment,
                                 tilesetId: ts.id,
-                                imageId: (ts.isCollection && imgObj) ? imgObj.id : undefined,
+                                imageId: isColl ? imgObj.id : undefined,
+                                tx: !isColl ? stampCol : undefined,
+                                ty: !isColl ? stampRow : undefined,
+                                localTileId: localTileId,
                                 custom: inheritedCustom
                             });
                             return;

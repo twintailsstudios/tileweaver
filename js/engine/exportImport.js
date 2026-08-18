@@ -227,7 +227,12 @@
 
             if (ts.isCollection) {
                 const imageCount = ts.images ? ts.images.length : 0;
-                const tilecount = ts.tilecount !== undefined ? ts.tilecount : imageCount;
+                const maxTileId = (ts.images && ts.images.length > 0)
+                    ? Math.max(...ts.images.map(i => typeof i.tileId === 'number' ? i.tileId : 0))
+                    : 0;
+                const tilecount = (ts.images && ts.images.length > 0)
+                    ? Math.max(ts.tilecount !== undefined ? ts.tilecount : imageCount, maxTileId + 1)
+                    : 1;
                 currentGid = firstgid + Math.max(1, tilecount);
 
                 let maxW = ts.tilewidth || state.TILE_SIZE;
@@ -453,7 +458,8 @@
             if (tsInState.isCollection && Array.isArray(tsInState.images)) {
                 imageIndexMap = new Map();
                 tsInState.images.forEach((img, idx) => {
-                    imageIndexMap.set(img.id, idx + 1);
+                    const localTileId = typeof img.tileId === 'number' ? img.tileId : idx;
+                    imageIndexMap.set(img.id, localTileId + 1);
                 });
             }
             metaLookup.set(tsInState.id, {
@@ -491,6 +497,34 @@
                         } else if (Array.isArray(obj.properties)) {
                             propList = JSON.parse(JSON.stringify(obj.properties));
                         }
+
+                        let exportedGid = obj.gid || undefined;
+                        if (obj.gid || obj.tilesetId) {
+                            const meta = obj.tilesetId ? metaLookup.get(obj.tilesetId) : (state.tilesets && state.tilesets[0] ? metaLookup.get(state.tilesets[0].id) : null);
+                            if (meta) {
+                                let localTileId = 0;
+                                if (meta.isCollection) {
+                                    if (meta.imageIndexMap && obj.imageId && meta.imageIndexMap.has(obj.imageId)) {
+                                        localTileId = meta.imageIndexMap.get(obj.imageId) - 1;
+                                    } else if (obj.localTileId !== undefined) {
+                                        localTileId = obj.localTileId;
+                                    } else if (obj.gid) {
+                                        localTileId = Math.max(0, (obj.gid & 0x1FFFFFFF) - (meta.firstgid || 1));
+                                    }
+                                } else {
+                                    if (obj.tx !== undefined && obj.ty !== undefined) {
+                                        localTileId = obj.ty * meta.columns + obj.tx;
+                                    } else if (obj.localTileId !== undefined) {
+                                        localTileId = obj.localTileId;
+                                    } else if (obj.gid) {
+                                        localTileId = Math.max(0, (obj.gid & 0x1FFFFFFF) - (meta.firstgid || 1));
+                                    }
+                                }
+                                const flags = ((obj.gid || 0) >>> 0) & 0xE0000000;
+                                exportedGid = ((meta.firstgid + localTileId) | flags) >>> 0;
+                            }
+                        }
+
                         return {
                             id: obj.id,
                             name: obj.name || '',
@@ -500,7 +534,7 @@
                             width: obj.width,
                             height: obj.height,
                             rotation: obj.rotation || 0,
-                            gid: obj.gid || undefined,
+                            gid: exportedGid,
                             alignment: obj.alignment || undefined,
                             ellipse: obj.ellipse || undefined,
                             point: obj.point || undefined,
@@ -1345,18 +1379,42 @@
 
                             let tilesetId = obj.tilesetId || undefined;
                             let imageId = obj.imageId || undefined;
-                            if (obj.gid && !tilesetId) {
+                            let tx = obj.tx !== undefined ? obj.tx : undefined;
+                            let ty = obj.ty !== undefined ? obj.ty : undefined;
+                            let localTileId = obj.localTileId !== undefined ? obj.localTileId : undefined;
+
+                            if (obj.gid) {
                                 const rawGid = (obj.gid >>> 0) & 0x1FFFFFFF;
-                                const matchedTs = window.TileWeaver.stateModule ? window.TileWeaver.stateModule.getTilesetForGid(rawGid) : null;
+                                const matchedTs = tilesetId
+                                    ? state.tilesets.find(t => t.id === tilesetId)
+                                    : (window.TileWeaver.stateModule ? window.TileWeaver.stateModule.getTilesetForGid(rawGid) : null);
                                 if (matchedTs) {
                                     tilesetId = matchedTs.id;
+                                    const diff = Math.max(0, rawGid - (matchedTs.firstgid || 1));
                                     if (matchedTs.isCollection && matchedTs.images) {
-                                        const localId = rawGid - (matchedTs.firstgid || 1);
-                                        const imgObj = matchedTs.images.find(img => img.tileId === localId) ||
-                                                       matchedTs.images.find(img => img.id === localId) ||
-                                                       matchedTs.images[localId] ||
+                                        const imgObj = (imageId ? matchedTs.images.find(img => img.id === imageId) : null) ||
+                                                       matchedTs.images.find(img => img.tileId === diff) ||
+                                                       matchedTs.images.find(img => img.id === diff) ||
+                                                       matchedTs.images[diff] ||
                                                        matchedTs.images[0];
-                                        if (imgObj) imageId = imgObj.id;
+                                        if (imgObj) {
+                                            imageId = imgObj.id;
+                                            localTileId = typeof imgObj.tileId === 'number' ? imgObj.tileId : matchedTs.images.indexOf(imgObj);
+                                        } else {
+                                            localTileId = diff;
+                                        }
+                                    } else {
+                                        const tw = matchedTs.tilewidth || state.TILE_SIZE;
+                                        const spacing = matchedTs.spacing || 0;
+                                        const margin = matchedTs.margin || 0;
+                                        const tsCols = matchedTs.columns || (matchedTs.imagewidth ? Math.floor((matchedTs.imagewidth - margin) / (tw + spacing)) : (matchedTs.image ? Math.floor((matchedTs.image.width - margin) / (tw + spacing)) : 1));
+                                        if (tx === undefined || ty === undefined) {
+                                            localTileId = (localTileId !== undefined) ? localTileId : diff;
+                                            tx = localTileId % tsCols;
+                                            ty = Math.floor(localTileId / tsCols);
+                                        } else {
+                                            localTileId = ty * tsCols + tx;
+                                        }
                                     }
                                 }
                             }
@@ -1374,6 +1432,9 @@
                                 alignment: obj.alignment || undefined,
                                 tilesetId: tilesetId,
                                 imageId: imageId,
+                                tx: tx,
+                                ty: ty,
+                                localTileId: localTileId,
                                 ellipse: obj.ellipse || undefined,
                                 point: obj.point || undefined,
                                 polygon: obj.polygon || undefined,

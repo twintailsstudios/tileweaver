@@ -81,13 +81,35 @@ staticDirs.forEach(dir => {
     }
 });
 
-// 5. Ensure legacy _redirects is purged if present from cache
+// 5. Synchronize Project Version into Dist Build Assets
+const pkg = JSON.parse(fs.readFileSync(path.join(ROOT_DIR, 'package.json'), 'utf8'));
+const version = pkg.version || '3.3.0';
+const versionTag = version.startsWith('v') ? version : `v${version}`;
+
+const distIndexHtml = path.join(DIST_DIR, 'index.html');
+if (fs.existsSync(distIndexHtml)) {
+    let content = fs.readFileSync(distIndexHtml, 'utf8');
+    content = content.replace(/"softwareVersion":\s*"[^"]*"/g, `"softwareVersion": "${version}"`);
+    content = content.replace(/(<span\s+id="app-header-version"[^>]*>)([^<]*)(<\/span>)/g, `$1${versionTag}$3`);
+    fs.writeFileSync(distIndexHtml, content, 'utf8');
+    console.log(`  ✔ Injected project version ${versionTag} into dist/index.html`);
+}
+
+const distConstants = path.join(DIST_DIR, 'js', 'constants.js');
+if (fs.existsSync(distConstants)) {
+    let content = fs.readFileSync(distConstants, 'utf8');
+    content = content.replace(/let appReleaseVersion = '[^']*';/, `let appReleaseVersion = '${version}';`);
+    fs.writeFileSync(distConstants, content, 'utf8');
+    console.log(`  ✔ Injected project version ${version} into dist/js/constants.js`);
+}
+
+// 6. Ensure legacy _redirects is purged if present from cache
 const legacyRedirects = path.join(DIST_DIR, '_redirects');
 if (fs.existsSync(legacyRedirects)) {
     fs.unlinkSync(legacyRedirects);
 }
 
-// 6. Audit dist size and file count
+// 7. Audit dist size and file count
 let totalFiles = 0;
 function countFiles(dir) {
     const entries = fs.readdirSync(dir, { withFileTypes: true });

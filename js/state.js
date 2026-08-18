@@ -469,7 +469,8 @@
 
     /**
      * Dynamically recomputes `firstgid` for all tilesets in `state.tilesets`
-     * to ensure contiguous, non-overlapping GID allocations across standard spritesheets and image collections.
+     * and synchronizes all placed object GIDs across all `objectgroup` layers
+     * to ensure contiguous, non-overlapping GID allocations and zero object scrambling.
      */
     function recomputeTilesetGids() {
         if (!state.tilesets || state.tilesets.length === 0) return;
@@ -497,6 +498,59 @@
                 currentGid += (ts.tilecount || 1);
             }
         });
+
+        // INVARIANT: Synchronize obj.gid for all placed objects across all object layers
+        if (state.mapLayers && Array.isArray(state.mapLayers)) {
+            state.mapLayers.forEach(layer => {
+                if (layer && layer.type === 'objectgroup' && Array.isArray(layer.objects)) {
+                    layer.objects.forEach(obj => {
+                        if (!obj || (!obj.gid && !obj.tilesetId)) return;
+                        let ts = obj.tilesetId ? state.tilesets.find(t => t.id === obj.tilesetId) : null;
+                        if (!ts && obj.gid) {
+                            ts = getTilesetForGid(obj.gid);
+                            if (ts) obj.tilesetId = ts.id;
+                        }
+                        if (ts) {
+                            let localTileId = 0;
+                            if (ts.isCollection && ts.images) {
+                                let imgObj = obj.imageId ? ts.images.find(img => img.id === obj.imageId) : null;
+                                if (!imgObj && obj.localTileId !== undefined) {
+                                    imgObj = ts.images.find(img => img.tileId === obj.localTileId) || ts.images[obj.localTileId];
+                                }
+                                if (imgObj) {
+                                    obj.imageId = imgObj.id;
+                                    localTileId = typeof imgObj.tileId === 'number' ? imgObj.tileId : ts.images.indexOf(imgObj);
+                                } else {
+                                    localTileId = obj.localTileId !== undefined ? obj.localTileId : 0;
+                                }
+                                obj.localTileId = localTileId;
+                            } else {
+                                const tw = ts.tilewidth || state.TILE_SIZE;
+                                const spacing = ts.spacing || 0;
+                                const margin = ts.margin || 0;
+                                const tsCols = ts.columns !== undefined ? ts.columns : (ts.image ? Math.max(1, Math.floor((ts.image.width - margin) / (tw + spacing))) : 1);
+                                if (obj.tx !== undefined && obj.ty !== undefined) {
+                                    localTileId = obj.ty * tsCols + obj.tx;
+                                    obj.localTileId = localTileId;
+                                } else if (obj.localTileId !== undefined) {
+                                    localTileId = obj.localTileId;
+                                    obj.tx = localTileId % tsCols;
+                                    obj.ty = Math.floor(localTileId / tsCols);
+                                } else if (obj.gid) {
+                                    const rawGid = (obj.gid >>> 0) & 0x1FFFFFFF;
+                                    localTileId = Math.max(0, rawGid - (ts.firstgid || 1));
+                                    obj.localTileId = localTileId;
+                                    obj.tx = localTileId % tsCols;
+                                    obj.ty = Math.floor(localTileId / tsCols);
+                                }
+                            }
+                            const flags = ((obj.gid || 0) >>> 0) & 0xE0000000;
+                            obj.gid = ((ts.firstgid + localTileId) | flags) >>> 0;
+                        }
+                    });
+                }
+            });
+        }
     }
 
     /**

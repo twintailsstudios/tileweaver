@@ -296,10 +296,34 @@
                 }
             });
         }
+
+        // =========================================================================
+        // 8. APP HEADER VERSION BADGE SYNCHRONIZATION
+        // =========================================================================
+        updateHeaderVersion();
+    }
+
+    /**
+     * Synchronizes the top-left application header badge with the authoritative project version.
+     * @param {string} [customVersion] - Optional custom version override
+     * @returns {string|null} The formatted version string applied to the DOM badge
+     */
+    function updateHeaderVersion(customVersion) {
+        const versionBadge = typeof document !== 'undefined' ? document.getElementById('app-header-version') : null;
+        const constants = window.TileWeaver && window.TileWeaver.constants;
+        const appVersion = customVersion || (constants && (constants.APP_VERSION || constants.VERSION)) || '3.3.0';
+        if (versionBadge) {
+            const formattedVersion = String(appVersion).startsWith('v') ? String(appVersion) : `v${appVersion}`;
+            versionBadge.textContent = formattedVersion;
+            versionBadge.title = `TileWeaver ${formattedVersion}`;
+            return formattedVersion;
+        }
+        return null;
     }
 
     // Expose header manager on window.TileWeaver namespace
     window.TileWeaver.header = {
-        initHeaderUI
+        initHeaderUI,
+        updateHeaderVersion
     };
 })();

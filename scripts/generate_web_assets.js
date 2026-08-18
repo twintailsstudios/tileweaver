@@ -207,9 +207,17 @@ function generateOGBanner() {
     ctx.fillText('TileWeaver', 0, 90);
 
     // Version Tag
+    let pkgVersion = '3.3.0';
+    try {
+        const pkg = require(path.join(ROOT_DIR, 'package.json'));
+        if (pkg && pkg.version) pkgVersion = String(pkg.version);
+    } catch (e) {
+        // Fallback
+    }
+    const versionLabel = pkgVersion.startsWith('v') ? pkgVersion : `v${pkgVersion}`;
     ctx.fillStyle = '#94a3b8';
     ctx.font = '32px sans-serif';
-    ctx.fillText('v3.3', 315, 90);
+    ctx.fillText(versionLabel, 315, 90);
 
     // Subtitle / Tagline
     ctx.fillStyle = '#cbd5e1';

@@ -462,14 +462,15 @@
                     let matchedTs = (obj.tilesetId && state.tilesets) 
                         ? state.tilesets.find(t => t.id === obj.tilesetId) 
                         : null;
-                    if (!matchedTs) {
-                        matchedTs = window.TileWeaver.stateModule ? window.TileWeaver.stateModule.getTilesetForGid(obj.gid) : state.tilesets[0];
+                    if (!matchedTs && !obj.tilesetId) {
+                        matchedTs = window.TileWeaver.stateModule ? window.TileWeaver.stateModule.getTilesetForGid(obj.gid) : (state.tilesets ? state.tilesets[0] : null);
                     }
 
                     if (matchedTs) {
                         const localId = gid - (matchedTs.firstgid || 1);
                         if (matchedTs.isCollection && matchedTs.images) {
                             const imgObj = (obj.imageId ? matchedTs.images.find(img => img.id === obj.imageId) : null) ||
+                                           (obj.localTileId !== undefined ? matchedTs.images.find(img => img.tileId === obj.localTileId) : null) ||
                                            matchedTs.images.find(img => img.tileId === localId) ||
                                            matchedTs.images.find(img => img.id === localId) ||
                                            matchedTs.images[localId] ||
@@ -493,14 +494,21 @@
                                 renderedImage = true;
                             }
                         } else if (matchedTs.image && matchedTs.image.width > 0) {
-                            const tsCols = matchedTs.columns || Math.floor((matchedTs.image.width - (matchedTs.margin || 0)) / (state.TILE_SIZE + (matchedTs.spacing || 0)));
+                            const tw = matchedTs.tilewidth || state.TILE_SIZE;
+                            const th = matchedTs.tileheight || state.TILE_SIZE;
                             const margin = matchedTs.margin || 0;
                             const spacing = matchedTs.spacing || 0;
-                            const tx = localId % (tsCols > 0 ? tsCols : 1);
-                            const ty = Math.floor(localId / (tsCols > 0 ? tsCols : 1));
-                            const srcX = margin + tx * (state.TILE_SIZE + spacing);
-                            const srcY = margin + ty * (state.TILE_SIZE + spacing);
-                            ctx.drawImage(matchedTs.image, srcX, srcY, state.TILE_SIZE, state.TILE_SIZE, 0, 0, 64, 64);
+                            const tsCols = matchedTs.columns || Math.max(1, Math.floor((matchedTs.image.width - margin) / (tw + spacing)));
+                            let tx = obj.tx;
+                            let ty = obj.ty;
+                            if (tx === undefined || ty === undefined) {
+                                const localTileId = obj.localTileId !== undefined ? obj.localTileId : localId;
+                                tx = localTileId % tsCols;
+                                ty = Math.floor(localTileId / tsCols);
+                            }
+                            const srcX = margin + tx * (tw + spacing);
+                            const srcY = margin + ty * (th + spacing);
+                            ctx.drawImage(matchedTs.image, srcX, srcY, tw, th, 0, 0, 64, 64);
                             renderedImage = true;
                         }
                     }

@@ -105,6 +105,7 @@ let assetManagerClosed = false;
 let importWizardOpened = false;
 
 window.TileWeaver = {
+    constants: { APP_VERSION: '3.3.0', VERSION: '3.3.0' },
     stateModule: { state: mockState },
     history: {
         pushHistoryState: () => { historyPushCount++; },
@@ -147,6 +148,7 @@ require('../js/ui/header.js');
 console.log('\n▶ TEST 1: Public Module Interface & Exports');
 assert.ok(window.TileWeaver.header, 'window.TileWeaver.header namespace must exist');
 assert.strictEqual(typeof window.TileWeaver.header.initHeaderUI, 'function', 'initHeaderUI must be a function');
+assert.strictEqual(typeof window.TileWeaver.header.updateHeaderVersion, 'function', 'updateHeaderVersion must be a function');
 console.log('  ✔ Header module correctly exposed on window.TileWeaver namespace!');
 
 // Initialize UI
@@ -280,6 +282,28 @@ document.getElementById('btn-open-import-wizard').click();
 assert.ok(importWizardOpened, 'Import wizard opened');
 console.log('  ✔ Export routing, asset manager shortcuts, and wizard modals verified!');
 
+// -----------------------------------------------------------------------------
+// TEST 7: Application Header Version Badge Synchronization
+// -----------------------------------------------------------------------------
+console.log('\n▶ TEST 7: Application Header Version Badge Synchronization');
+
+const versionBadge = document.getElementById('app-header-version');
+assert.ok(versionBadge, 'app-header-version element must exist in DOM');
+assert.strictEqual(versionBadge.textContent, 'v3.3.0', 'Header version badge should be initialized to v3.3.0 from constants');
+
+const updatedVer = window.TileWeaver.header.updateHeaderVersion('3.4.0');
+assert.strictEqual(updatedVer, 'v3.4.0', 'updateHeaderVersion should return formatted v3.4.0');
+assert.strictEqual(versionBadge.textContent, 'v3.4.0', 'Badge text should update to v3.4.0');
+assert.strictEqual(versionBadge.title, 'TileWeaver v3.4.0', 'Badge tooltip title should update');
+
+// Test already prefixed 'v' string
+window.TileWeaver.header.updateHeaderVersion('v4.0.0');
+assert.strictEqual(versionBadge.textContent, 'v4.0.0', 'Prefixed version should remain v4.0.0 without duplicate v prefix');
+
+// Reset back to baseline
+window.TileWeaver.header.updateHeaderVersion('3.3.0');
+console.log('  ✔ Header version badge initialization, prefix formatting & dynamic update verified!');
+
 console.log('===============================================================');
-console.log('🎉 ALL HEADER MANAGER AUTOMATED TESTS PASSED (6/6)!');
+console.log('🎉 ALL HEADER MANAGER AUTOMATED TESTS PASSED (7/7)!');
 console.log('===============================================================');

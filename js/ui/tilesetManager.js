@@ -1224,6 +1224,69 @@
     }
 
     /**
+     * Deletes the currently active tileset, prunes orphaned placed objects referencing it,
+     * recomputes GIDs across remaining tilesets and objects, and updates UI.
+     */
+    function handleDeleteTileset() {
+        if (!state.tilesets || state.tilesets.length === 0) {
+            showMessage("No tileset to delete.", "error");
+            return;
+        }
+
+        const targetTs = state.tilesets[state.activeTilesetIndex];
+        if (!targetTs) return;
+
+        // HISTORY INVARIANT: Record undo snapshot before destructive tileset deletion
+        if (window.TileWeaver.history && window.TileWeaver.history.pushHistoryState) {
+            window.TileWeaver.history.pushHistoryState();
+        }
+
+        // 1. Prune all placed objects belonging to the deleted tileset across all map layers
+        if (state.mapLayers && Array.isArray(state.mapLayers)) {
+            state.mapLayers.forEach(layer => {
+                if (layer.objects && Array.isArray(layer.objects)) {
+                    layer.objects = layer.objects.filter(obj => {
+                        if (!obj) return true;
+                        if (obj.tilesetId === targetTs.id) return false;
+                        if (!obj.tilesetId && obj.gid !== undefined) {
+                            const resolvedTs = window.TileWeaver.stateModule ? window.TileWeaver.stateModule.getTilesetForGid(obj.gid) : null;
+                            if (resolvedTs && resolvedTs.id === targetTs.id) return false;
+                        }
+                        return true;
+                    });
+                }
+            });
+        }
+
+        // 2. Clear selected object id if it was one of the deleted objects
+        if (state.selectedObjectId) {
+            const selRef = window.TileWeaver.objectInspector ? window.TileWeaver.objectInspector.getSelectedObjectRef() : null;
+            if (!selRef) {
+                state.selectedObjectId = null;
+            }
+        }
+
+        // 3. Remove tileset from state and recompute GIDs
+        state.tilesets.splice(state.activeTilesetIndex, 1);
+        if (window.TileWeaver.stateModule && window.TileWeaver.stateModule.recomputeTilesetGids) {
+            window.TileWeaver.stateModule.recomputeTilesetGids();
+        }
+        state.activeTilesetIndex = Math.max(0, Math.min(state.activeTilesetIndex, state.tilesets.length - 1));
+
+        // 4. Update UI & re-render
+        renderTilesetSelect();
+        if (window.TileWeaver.layerManager && window.TileWeaver.layerManager.renderLayersList) {
+            window.TileWeaver.layerManager.renderLayersList();
+        }
+        if (window.TileWeaver.tileProperties && window.TileWeaver.tileProperties.updateLiveTilePropertiesPanel) {
+            window.TileWeaver.tileProperties.updateLiveTilePropertiesPanel();
+        }
+        drawTileset();
+        drawMap();
+        showMessage(`Tileset '${targetTs.name || "Tileset"}' deleted.`, "info");
+    }
+
+    /**
      * Initializes state for `state.tilesets`, `state.autotiles`, `state.animatedTiles`,
      * and `state.materials` with clean empty project defaults, then attaches event listeners.
      * @param {Function} [onInitComplete] - Callback invoked when initialization completes.
@@ -1451,6 +1514,92 @@
             }
         });
 
+        // Add Tileset Modal Tab Navigation
+        const tabs = ['tab-add-preset', 'tab-add-upload', 'tab-add-collection'];
+        tabs.forEach(tabId => {
+            document.getElementById(tabId)?.addEventListener('click', () => {
+                // Update active tab button styles
+                tabs.forEach(t => {
+                    const btn = document.getElementById(t);
+                    if (btn) {
+                        btn.className = (t === tabId)
+                            ? 'pb-2 border-b-2 border-blue-500 text-blue-400 font-bold text-xs flex items-center gap-1.5 transition-colors'
+                            : 'pb-2 border-b-2 border-transparent text-slate-400 hover:text-slate-200 font-medium text-xs flex items-center gap-1.5 transition-colors';
+                    }
+                });
+                // Switch panel view
+                document.querySelectorAll('.add-tileset-panel').forEach(panel => panel.classList.add('hidden'));
+                const activePanelId = tabId.replace('tab-add-', 'panel-add-');
+                document.getElementById(activePanelId)?.classList.remove('hidden');
+            });
+        });
+
+        // Preset cards selection in modal
+        document.querySelectorAll('.btn-load-preset-modal').forEach(card => {
+            card.addEventListener('click', () => {
+                const presetId = card.getAttribute('data-preset');
+                if (presetId === 'grass') generateDefaultTileset();
+                else if (presetId === 'dirt') generateDirtPathTileset();
+                else if (presetId === 'dualgrid') generateDualGridDirtTileset();
+                else if (presetId === 'collection') generateDefaultCollectionTileset();
+                closeAddTilesetModal();
+            });
+        });
+
+        // Direct Collection creation in modal
+        document.getElementById('btn-create-collection-confirm')?.addEventListener('click', () => {
+            const nameInput = document.getElementById('input-collection-name');
+            const name = nameInput ? nameInput.value.trim() : '';
+            handleCreateCollection(name || "Custom Props");
+            closeAddTilesetModal();
+        });
+
+        // Single Spritesheet upload dropzone in modal
+        const singleDropzone = document.getElementById('dropzone-modal-single');
+        const singleFileInput = document.getElementById('input-modal-single-file');
+        if (singleDropzone && singleFileInput) {
+            singleDropzone.addEventListener('click', () => singleFileInput.click());
+            singleDropzone.addEventListener('dragover', (e) => { e.preventDefault(); singleDropzone.classList.add('border-blue-500', 'bg-blue-950/20'); });
+            singleDropzone.addEventListener('dragleave', () => { singleDropzone.classList.remove('border-blue-500', 'bg-blue-950/20'); });
+            singleDropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                singleDropzone.classList.remove('border-blue-500', 'bg-blue-950/20');
+                if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                    handlePngUpload(e.dataTransfer.files[0]);
+                    closeAddTilesetModal();
+                }
+            });
+            singleFileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files[0]) {
+                    handlePngUpload(e.target.files[0]);
+                    closeAddTilesetModal();
+                }
+            });
+        }
+
+        // Multi-image upload dropzone for Collection in modal
+        const multiDropzone = document.getElementById('dropzone-modal-multi');
+        const multiFileInput = document.getElementById('input-modal-multi-file');
+        if (multiDropzone && multiFileInput) {
+            multiDropzone.addEventListener('click', () => multiFileInput.click());
+            multiDropzone.addEventListener('dragover', (e) => { e.preventDefault(); multiDropzone.classList.add('border-purple-500', 'bg-purple-950/20'); });
+            multiDropzone.addEventListener('dragleave', () => { multiDropzone.classList.remove('border-purple-500', 'bg-purple-950/20'); });
+            multiDropzone.addEventListener('drop', async (e) => {
+                e.preventDefault();
+                multiDropzone.classList.remove('border-purple-500', 'bg-purple-950/20');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+                    await handleMultiImageCollectionUpload(e.dataTransfer.files);
+                    closeAddTilesetModal();
+                }
+            });
+            multiFileInput.addEventListener('change', async (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    await handleMultiImageCollectionUpload(e.target.files);
+                    closeAddTilesetModal();
+                }
+            });
+        }
+
         // Empty Collection direct link
         document.getElementById('btn-create-empty-collection-link')?.addEventListener('click', () => {
             handleCreateCollection();
@@ -1464,23 +1613,7 @@
             });
         });
 
-        // Delete tileset helper
-        const handleDeleteTileset = () => {
-            if (!state.tilesets || state.tilesets.length === 0) {
-                showMessage("No tileset to delete.", "error");
-                return;
-            }
-            state.tilesets.splice(state.activeTilesetIndex, 1);
-            if (window.TileWeaver.stateModule && window.TileWeaver.stateModule.recomputeTilesetGids) {
-                window.TileWeaver.stateModule.recomputeTilesetGids();
-            }
-            state.activeTilesetIndex = Math.max(0, state.tilesets.length - 1);
-            renderTilesetSelect();
-            drawTileset();
-            drawMap();
-            showMessage("Tileset deleted.", "info");
-        };
-
+        // Delete tileset listeners
         ['btn-delete-tileset', 'btn-delete-tileset-dock', 'btn-delete-tileset-popout'].forEach(id => {
             document.getElementById(id)?.addEventListener('click', handleDeleteTileset);
         });
@@ -2066,6 +2199,7 @@
         handleAddCollectionImages,
         handleDeleteCollectionImage,
         handleReplaceCollectionImage,
+        handleDeleteTileset,
         initTilesetsUI
     };
 })();

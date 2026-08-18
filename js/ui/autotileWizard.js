@@ -202,22 +202,7 @@
                     state.terrainPresetHoverCol = -1;
                     state.terrainPresetHoverRow = -1;
 
-                    const btnOverlay = document.getElementById('btn-terrain-auto-overlay');
-                    const btnDualGrid = document.getElementById('btn-terrain-auto-dualgrid');
-                    const btnCliff = document.getElementById('btn-terrain-auto-cliff7x6');
-                    const btnWall = document.getElementById('btn-terrain-auto-wall9x3');
-                    if (btnOverlay) {
-                        btnOverlay.className = "px-3 py-2 bg-amber-900/80 hover:bg-amber-800 border border-amber-600 text-amber-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-                    }
-                    if (btnDualGrid) {
-                        btnDualGrid.className = "px-3 py-2 bg-teal-900/80 hover:bg-teal-800 border border-teal-600 text-teal-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-                    }
-                    if (btnCliff) {
-                        btnCliff.className = "px-3 py-1.5 bg-amber-700 hover:bg-amber-600 border border-amber-500 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-                    }
-                    if (btnWall) {
-                        btnWall.className = "px-3 py-1.5 bg-blue-700 hover:bg-blue-600 border border-blue-500 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-                    }
+                    updateTerrainPresetButtonsUI();
 
                     renderTerrainMaterialHeaderSwatches();
                     renderTerrainSlotButtons();
@@ -1577,10 +1562,7 @@
             saveBtn.className = "px-5 py-1.5 bg-teal-600 hover:bg-teal-500 rounded text-xs text-white font-bold shadow transition-colors";
         }
 
-        const btn = document.getElementById('btn-terrain-auto-dualgrid');
-        if (btn) {
-            btn.className = "px-3 py-2 bg-teal-900/80 hover:bg-teal-800 border border-teal-600 text-teal-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-        }
+        updateTerrainPresetButtonsUI();
         document.getElementById('terrain-wizard-modal')?.classList.add('hidden');
     }
 
@@ -1914,17 +1896,73 @@
         renderTerrainPreview();
     }
 
+    /**
+     * Updates visual styles, active highlights, and tab visibility of Terrain Wizard preset buttons.
+     * Enforces tab-based visibility (hidden class) across preset toggles, commits, and mode tab changes.
+     */
+    function updateTerrainPresetButtonsUI() {
+        const btnOverlay = document.getElementById('btn-terrain-auto-overlay');
+        const btnDualGrid = document.getElementById('btn-terrain-auto-dualgrid');
+        const btnCliff = document.getElementById('btn-terrain-auto-cliff7x6');
+        const btnWall = document.getElementById('btn-terrain-auto-wall9x3');
+
+        const mode = state.terrainWizardMode || 'ground';
+        const isActive = !!state.terrainPresetPlacementActive;
+        const activeType = state.presetPlacementType || 'dualgrid';
+
+        const baseStyles = {
+            overlay: "px-3 py-1.5 bg-amber-900/80 hover:bg-amber-800 border border-amber-600 text-amber-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow",
+            dualgrid: "px-3 py-1.5 bg-teal-900/80 hover:bg-teal-800 border border-teal-600 text-teal-200 rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow",
+            cliff7x6: "px-3 py-1.5 bg-amber-700 hover:bg-amber-600 border border-amber-500 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow",
+            wall9x3: "px-3 py-1.5 bg-blue-700 hover:bg-blue-600 border border-blue-500 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow"
+        };
+
+        const activeHighlightStyle = "px-3 py-1.5 bg-blue-600 hover:bg-blue-500 border border-blue-400 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-lg ring-4 ring-blue-400/50 animate-pulse";
+
+        // 1. Update active vs inactive visual styles
+        if (btnOverlay) {
+            btnOverlay.className = (isActive && activeType === 'overlay') ? activeHighlightStyle : baseStyles.overlay;
+        }
+        if (btnDualGrid) {
+            btnDualGrid.className = (isActive && (activeType === 'dualgrid' || activeType === '2d')) ? activeHighlightStyle : baseStyles.dualgrid;
+        }
+        if (btnCliff) {
+            btnCliff.className = (isActive && (activeType === 'cliff7x6' || activeType === 'cliff6x5')) ? activeHighlightStyle : baseStyles.cliff7x6;
+        }
+        if (btnWall) {
+            btnWall.className = (isActive && (activeType === 'wall9x3' || activeType === 'wall')) ? activeHighlightStyle : baseStyles.wall9x3;
+        }
+
+        // 2. Enforce mode-based tab visibility (hidden class)
+        if (mode === 'wall') {
+            btnDualGrid?.classList.add('hidden');
+            btnOverlay?.classList.add('hidden');
+            btnCliff?.classList.add('hidden');
+            btnWall?.classList.remove('hidden');
+        } else if (mode === 'cliff') {
+            btnDualGrid?.classList.add('hidden');
+            btnOverlay?.classList.add('hidden');
+            btnCliff?.classList.remove('hidden');
+            btnWall?.classList.add('hidden');
+        } else {
+            // 'ground' mode
+            btnDualGrid?.classList.remove('hidden');
+            btnOverlay?.classList.remove('hidden');
+            btnCliff?.classList.add('hidden');
+            btnWall?.classList.add('hidden');
+        }
+    }
+
     /** Switches Terrain Wizard mode between 'ground' (2D dual-grid), 'cliff' (3D vertical 7x6 set), and 'wall' (16-tile cardinal 9x3 set) */
     function setTerrainWizardMode(mode) {
         state.terrainWizardMode = mode;
+        state.terrainPresetPlacementActive = false;
+        state.terrainPresetHoverCol = -1;
+        state.terrainPresetHoverRow = -1;
 
         const tabGround = document.getElementById('tab-terrain-ground');
         const tabCliff = document.getElementById('tab-terrain-cliff');
         const tabWall = document.getElementById('tab-terrain-wall');
-        const btnDualGrid = document.getElementById('btn-terrain-auto-dualgrid');
-        const btnOverlay = document.getElementById('btn-terrain-auto-overlay');
-        const btnCliff7x6 = document.getElementById('btn-terrain-auto-cliff7x6');
-        const btnWall9x3 = document.getElementById('btn-terrain-auto-wall9x3');
         const lblMat1 = document.getElementById('lbl-mat1-title');
         const lblMat2 = document.getElementById('lbl-mat2-title');
         const lblMat3 = document.getElementById('lbl-mat3-title');
@@ -1944,11 +1982,6 @@
             if (tabCliff) tabCliff.className = inactiveTabClass;
             if (tabWall) tabWall.className = activeTabClass('bg-blue-600');
 
-            if (btnDualGrid) btnDualGrid.classList.add('hidden');
-            if (btnOverlay) btnOverlay.classList.add('hidden');
-            if (btnCliff7x6) btnCliff7x6.classList.add('hidden');
-            if (btnWall9x3) btnWall9x3.classList.remove('hidden');
-
             if (lblMat1) lblMat1.textContent = "Wall / Fence Material";
             if (cardBase) cardBase.classList.remove('hidden');
             if (cardOverlay) cardOverlay.classList.add('hidden');
@@ -1962,11 +1995,6 @@
             if (tabGround) tabGround.className = inactiveTabClass;
             if (tabCliff) tabCliff.className = activeTabClass('bg-amber-600');
             if (tabWall) tabWall.className = inactiveTabClass;
-
-            if (btnDualGrid) btnDualGrid.classList.add('hidden');
-            if (btnOverlay) btnOverlay.classList.add('hidden');
-            if (btnCliff7x6) btnCliff7x6.classList.remove('hidden');
-            if (btnWall9x3) btnWall9x3.classList.add('hidden');
 
             if (lblMat1) lblMat1.textContent = "1. Cliff Top";
             if (lblMat2) lblMat2.textContent = "2. Cliff Wall";
@@ -1985,11 +2013,6 @@
             if (tabCliff) tabCliff.className = inactiveTabClass;
             if (tabWall) tabWall.className = inactiveTabClass;
 
-            if (btnDualGrid) btnDualGrid.classList.remove('hidden');
-            if (btnOverlay) btnOverlay.classList.remove('hidden');
-            if (btnCliff7x6) btnCliff7x6.classList.add('hidden');
-            if (btnWall9x3) btnWall9x3.classList.add('hidden');
-
             if (lblMat1) lblMat1.textContent = "Material 1 (Base)";
             if (lblMat2) lblMat2.textContent = "Material 2 (Overlay)";
             if (lblMat3) lblMat3.textContent = "Lower Ground Surface";
@@ -2004,6 +2027,7 @@
             state.terrainActiveSlotKey = 'grid_0';
         }
 
+        updateTerrainPresetButtonsUI();
         populateTerrainMaterialSelects();
         renderTerrainMaterialHeaderSwatches();
         renderTerrainSlotButtons();
@@ -2703,50 +2727,29 @@
 
     /** Toggles interactive preset placement mode (overlay, dualgrid, cliff7x6, or wall9x3) */
     function toggleTerrainPresetPlacement(presetType = 'dualgrid') {
-        state.terrainPresetPlacementActive = !state.terrainPresetPlacementActive;
-        state.presetPlacementType = presetType;
-        state.isOverlayWizardMode = (presetType === 'overlay');
+        if (state.terrainPresetPlacementActive && state.presetPlacementType === presetType) {
+            state.terrainPresetPlacementActive = false;
+            state.terrainPresetHoverCol = -1;
+            state.terrainPresetHoverRow = -1;
+            showMessage("Preset placement cancelled.", "info");
+        } else {
+            state.terrainPresetPlacementActive = true;
+            state.presetPlacementType = presetType;
+            state.isOverlayWizardMode = (presetType === 'overlay');
 
-        const btnOverlay = document.getElementById('btn-terrain-auto-overlay');
-        const btnDualGrid = document.getElementById('btn-terrain-auto-dualgrid');
-        const btnCliff = document.getElementById('btn-terrain-auto-cliff7x6');
-        const btnWall = document.getElementById('btn-terrain-auto-wall9x3');
-
-        if (state.terrainPresetPlacementActive) {
-            let activeBtn = btnDualGrid;
             let labelName = '6x3 Dual-Grid';
-
             if (presetType === 'overlay') {
-                activeBtn = btnOverlay;
                 labelName = '15-Tile Overlay';
             } else if (presetType === 'cliff7x6' || presetType === 'cliff6x5') {
-                activeBtn = btnCliff;
                 labelName = '7x6 Cliffside Sheet';
             } else if (presetType === 'wall9x3' || presetType === 'wall') {
-                activeBtn = btnWall;
                 labelName = '9x3 Wall Matrix';
             }
 
-            if (activeBtn) {
-                activeBtn.className = "px-3 py-2 bg-blue-600 hover:bg-blue-500 border border-blue-400 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shrink-0 shadow-lg ring-4 ring-blue-400/50 animate-pulse";
-            }
             showMessage(`Interactive ${labelName} Preset Placement Active: Hover and CLICK on your tileset!`, "info");
-        } else {
-            if (btnOverlay) {
-                btnOverlay.className = "px-3 py-2 bg-amber-900/80 hover:bg-amber-800 border border-amber-600 text-amber-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-            }
-            if (btnDualGrid) {
-                btnDualGrid.className = "px-3 py-2 bg-teal-900/80 hover:bg-teal-800 border border-teal-600 text-teal-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-            }
-            if (btnCliff) {
-                btnCliff.className = "px-3 py-1.5 bg-amber-700 hover:bg-amber-600 border border-amber-500 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-            }
-            if (btnWall) {
-                btnWall.className = "px-3 py-1.5 bg-blue-700 hover:bg-blue-600 border border-blue-500 text-white rounded-lg text-xs font-bold transition-colors flex items-center gap-1.5 shrink-0 shadow";
-            }
-            state.terrainPresetHoverCol = -1;
-            state.terrainPresetHoverRow = -1;
         }
+
+        updateTerrainPresetButtonsUI();
         renderTerrainTilesetCanvas();
     }
 
@@ -2938,6 +2941,9 @@
         pruneWizardPartnerTransition,
         applyTerrainPreset,
         saveTerrainAutotile,
-        applyWall9x3PresetAt
+        applyWall9x3PresetAt,
+        setTerrainWizardMode,
+        updateTerrainPresetButtonsUI,
+        toggleTerrainPresetPlacement
     };
 })();
