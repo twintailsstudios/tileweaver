@@ -723,11 +723,15 @@
                     mapCtx.lineWidth = 2.5;
                     mapCtx.strokeRect(state.hoverCol * state.TILE_SIZE, state.hoverRow * state.TILE_SIZE, state.TILE_SIZE, state.TILE_SIZE * (h + 1));
                 } else if (state.currentTool === 'terrain') {
-                    mapCtx.fillStyle = 'rgba(20, 184, 166, 0.4)';
-                    mapCtx.fillRect(state.hoverCol * state.TILE_SIZE, state.hoverRow * state.TILE_SIZE, state.TILE_SIZE, state.TILE_SIZE);
+                    const R = Math.max(0, (state.terrainBrushRadius || 1) - 1);
+                    const boxX = (state.hoverCol - R) * state.TILE_SIZE;
+                    const boxY = (state.hoverRow - R) * state.TILE_SIZE;
+                    const boxSize = (2 * R + 1) * state.TILE_SIZE;
+                    mapCtx.fillStyle = 'rgba(20, 184, 166, 0.35)';
+                    mapCtx.fillRect(boxX, boxY, boxSize, boxSize);
                     mapCtx.strokeStyle = '#14b8a6';
                     mapCtx.lineWidth = 2;
-                    mapCtx.strokeRect(state.hoverCol * state.TILE_SIZE, state.hoverRow * state.TILE_SIZE, state.TILE_SIZE, state.TILE_SIZE);
+                    mapCtx.strokeRect(boxX, boxY, boxSize, boxSize);
                 } else if (state.currentTool === 'autotile') {
                     mapCtx.fillStyle = 'rgba(16, 185, 129, 0.4)';
                     mapCtx.fillRect(state.hoverCol * state.TILE_SIZE, state.hoverRow * state.TILE_SIZE, state.TILE_SIZE, state.TILE_SIZE);
@@ -888,6 +892,68 @@
                         }
                     }
                 }
+            }
+        }
+
+        // 6. Render Straight-Line Axis Lock Guideline & Length Indicator Overlay
+        if (state.isDrawing && state.strokeAxisLock && state.strokeAnchorCol !== -1 && state.strokeAnchorRow !== -1) {
+            mapCtx.save();
+            mapCtx.setLineDash([6, 4]);
+            mapCtx.lineWidth = 1.5;
+            mapCtx.strokeStyle = 'rgba(56, 189, 248, 0.75)';
+
+            const mapW = state.mapWidth * state.TILE_SIZE;
+            const mapH = state.mapHeight * state.TILE_SIZE;
+
+            mapCtx.beginPath();
+            if (state.strokeAxisLock === 'x') {
+                const guideY = (state.strokeAnchorRow + 0.5) * state.TILE_SIZE;
+                mapCtx.moveTo(0, guideY);
+                mapCtx.lineTo(mapW, guideY);
+            } else if (state.strokeAxisLock === 'y') {
+                const guideX = (state.strokeAnchorCol + 0.5) * state.TILE_SIZE;
+                mapCtx.moveTo(guideX, 0);
+                mapCtx.lineTo(guideX, mapH);
+            }
+            mapCtx.stroke();
+            mapCtx.restore();
+
+            // Distance & Axis Dimension Pill Badge
+            const lengthTiles = (state.strokeAxisLock === 'x')
+                ? Math.abs(state.hoverCol - state.strokeAnchorCol) + 1
+                : Math.abs(state.hoverRow - state.strokeAnchorRow) + 1;
+
+            if (lengthTiles > 1) {
+                mapCtx.save();
+                const distLabel = (state.strokeAxisLock === 'x')
+                    ? `⟷ ${lengthTiles} tiles [Ctrl]`
+                    : `↕ ${lengthTiles} tiles [Ctrl]`;
+
+                mapCtx.font = 'bold 11px Inter, sans-serif';
+                const textWidth = mapCtx.measureText(distLabel).width;
+                const pillPadding = 8;
+                const pillW = textWidth + pillPadding * 2;
+                const pillH = 22;
+                const pillX = Math.min(mapW - pillW - 4, Math.max(4, (state.hoverCol + 1) * state.TILE_SIZE + 6));
+                const pillY = Math.min(mapH - pillH - 4, Math.max(4, state.hoverRow * state.TILE_SIZE - 6));
+
+                mapCtx.fillStyle = 'rgba(15, 23, 42, 0.88)';
+                mapCtx.strokeStyle = 'rgba(56, 189, 248, 0.7)';
+                mapCtx.lineWidth = 1;
+                mapCtx.beginPath();
+                if (typeof mapCtx.roundRect === 'function') {
+                    mapCtx.roundRect(pillX, pillY, pillW, pillH, 4);
+                } else {
+                    mapCtx.rect(pillX, pillY, pillW, pillH);
+                }
+                mapCtx.fill();
+                mapCtx.stroke();
+
+                mapCtx.fillStyle = '#38bdf8';
+                mapCtx.textAlign = 'center';
+                mapCtx.textBaseline = 'middle';
+                mapCtx.fillText(distLabel, pillX + pillW / 2, pillY + pillH / 2);
+                mapCtx.restore();
             }
         }
     }

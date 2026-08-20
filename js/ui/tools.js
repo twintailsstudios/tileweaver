@@ -306,6 +306,13 @@
                 document.getElementById('map-container')?.classList.add('cursor-grab');
             }
             if (e.shiftKey) state.isShiftPressed = true;
+            if (e.ctrlKey || e.metaKey || e.key === 'Control' || e.key === 'Meta') {
+                state.isCtrlPressed = true;
+                if (state.isDrawing && state.strokeAnchorCol === -1 && state.hoverCol >= 0) {
+                    state.strokeAnchorCol = state.hoverCol;
+                    state.strokeAnchorRow = state.hoverRow;
+                }
+            }
         });
 
         window.addEventListener('keyup', (e) => {
@@ -318,6 +325,16 @@
                 }
             }
             if (!e.shiftKey) state.isShiftPressed = false;
+            if (e.key === 'Control' || e.key === 'Meta' || (!e.ctrlKey && !e.metaKey)) {
+                state.isCtrlPressed = false;
+                if (state.isDrawing) {
+                    state.strokeAxisLock = null;
+                    if (state.hoverCol >= 0) {
+                        state.strokeAnchorCol = state.hoverCol;
+                        state.strokeAnchorRow = state.hoverRow;
+                    }
+                }
+            }
         });
 
         updateToolTabStates();

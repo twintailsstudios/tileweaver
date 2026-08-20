@@ -1033,6 +1033,12 @@
             }
 
             state.isDrawing = true;
+            state.strokeAnchorCol = col;
+            state.strokeAnchorRow = row;
+            state.lastPaintedCol = col;
+            state.lastPaintedRow = row;
+            state.strokeAxisLock = null;
+
             if (window.TileWeaver.terrainSwatches && typeof window.TileWeaver.terrainSwatches.setRibbonDrawingFade === 'function') {
                 window.TileWeaver.terrainSwatches.setRibbonDrawingFade(true);
             }
@@ -1088,10 +1094,14 @@
                     applyTerrainVertex(col, row, strokeVal);
                     state.lastTerrainCol = col;
                     state.lastTerrainRow = row;
+                    state.lastPaintedCol = col;
+                    state.lastPaintedRow = row;
                 }
                 drawMap();
             } else {
                 applyTool(col, row);
+                state.lastPaintedCol = col;
+                state.lastPaintedRow = row;
                 drawMap();
             }
         });
@@ -1145,11 +1155,43 @@
                 const pixelY = coords.y || (coords.row * state.TILE_SIZE);
                 const { col, row } = coords;
 
+                // Axis-lock evaluation when Control/Meta is held during drawing
+                const isAxisLockModifier = !!(evt.ctrlKey || evt.metaKey || state.isCtrlPressed);
+                let targetCol = col;
+                let targetRow = row;
+
+                if (state.isDrawing && isAxisLockModifier) {
+                    if (state.strokeAnchorCol === -1 || state.strokeAnchorRow === -1) {
+                        state.strokeAnchorCol = (state.lastPaintedCol !== -1) ? state.lastPaintedCol : col;
+                        state.strokeAnchorRow = (state.lastPaintedRow !== -1) ? state.lastPaintedRow : row;
+                    }
+                    const dx = col - state.strokeAnchorCol;
+                    const dy = row - state.strokeAnchorRow;
+
+                    if (state.strokeAxisLock === null) {
+                        if (dx !== 0 || dy !== 0) {
+                            state.strokeAxisLock = (Math.abs(dx) >= Math.abs(dy)) ? 'x' : 'y';
+                        }
+                    }
+
+                    if (state.strokeAxisLock === 'x') {
+                        targetCol = col;
+                        targetRow = state.strokeAnchorRow;
+                    } else if (state.strokeAxisLock === 'y') {
+                        targetCol = state.strokeAnchorCol;
+                        targetRow = row;
+                    }
+                } else if (state.isDrawing && !isAxisLockModifier) {
+                    state.strokeAxisLock = null;
+                    state.strokeAnchorCol = col;
+                    state.strokeAnchorRow = row;
+                }
+
                 const activeLayer = state.mapLayers[state.activeLayerIndex];
                 const isObjectContext = (activeLayer && activeLayer.type === 'objectgroup') || state.currentTool.startsWith('object') || state.currentTool.startsWith('shape');
 
                 const pixelChanged = (pixelX !== state.hoverPixelX || pixelY !== state.hoverPixelY);
-                const cellChanged = (col !== state.hoverCol || row !== state.hoverRow);
+                const cellChanged = (targetCol !== state.hoverCol || targetRow !== state.hoverRow);
 
                 state.hoverPixelX = pixelX;
                 state.hoverPixelY = pixelY;
@@ -1165,23 +1207,47 @@
                 }
 
                 if (state.isDrawing && state.currentTool === 'terrain') {
-                    if (cellChanged) {
-                        state.lastTerrainCol = col;
-                        state.lastTerrainRow = row;
+                    if (cellChanged || (state.lastPaintedCol !== targetCol || state.lastPaintedRow !== targetRow)) {
+                        const fromC = (state.lastPaintedCol !== -1) ? state.lastPaintedCol : targetCol;
+                        const fromR = (state.lastPaintedRow !== -1) ? state.lastPaintedRow : targetRow;
+                        const points = getLinePoints(fromC, fromR, targetCol, targetRow);
                         const dragVal = (state.currentTerrainPaintValue !== undefined && state.currentTerrainPaintValue !== null)
                             ? state.currentTerrainPaintValue
                             : ((state.terrainStrokeValue !== undefined && state.terrainStrokeValue !== null) ? state.terrainStrokeValue : 0);
-                        applyTerrainVertex(col, row, dragVal);
+
+                        for (let i = 0; i < points.length; i++) {
+                            const pt = points[i];
+                            if (pt.col >= 0 && pt.col < state.mapWidth && pt.row >= 0 && pt.row < state.mapHeight) {
+                                applyTerrainVertex(pt.col, pt.row, dragVal);
+                            }
+                        }
+
+                        state.lastTerrainCol = targetCol;
+                        state.lastTerrainRow = targetRow;
+                        state.lastPaintedCol = targetCol;
+                        state.lastPaintedRow = targetRow;
+                        state.hoverCol = targetCol;
+                        state.hoverRow = targetRow;
                         drawMap();
                     }
                 }
 
                 if (cellChanged || (isObjectContext && pixelChanged)) {
-                    state.hoverCol = col;
-                    state.hoverRow = row;
+                    state.hoverCol = targetCol;
+                    state.hoverRow = targetRow;
 
-                    if (state.isDrawing && state.currentTool !== 'line' && state.currentTool !== 'rect' && state.currentTool !== 'bucket' && state.currentTool !== 'terrain') {
-                        applyTool(col, row);
+                    if (state.isDrawing && state.currentTool !== 'line' && state.currentTool !== 'rect' && state.currentTool !== 'bucket' && state.currentTool !== 'terrain' && state.currentTool !== 'terrainBucket') {
+                        const fromC = (state.lastPaintedCol !== -1) ? state.lastPaintedCol : targetCol;
+                        const fromR = (state.lastPaintedRow !== -1) ? state.lastPaintedRow : targetRow;
+                        const points = getLinePoints(fromC, fromR, targetCol, targetRow);
+                        for (let i = 0; i < points.length; i++) {
+                            const pt = points[i];
+                            if (pt.col >= 0 && pt.col < state.mapWidth && pt.row >= 0 && pt.row < state.mapHeight) {
+                                applyTool(pt.col, pt.row);
+                            }
+                        }
+                        state.lastPaintedCol = targetCol;
+                        state.lastPaintedRow = targetRow;
                     }
                     drawMap();
                 }
@@ -1227,6 +1293,12 @@
                     }
                 }
                 state.isDrawing = false;
+                state.strokeAxisLock = null;
+                state.strokeAnchorCol = -1;
+                state.strokeAnchorRow = -1;
+                state.lastPaintedCol = -1;
+                state.lastPaintedRow = -1;
+
                 if (window.TileWeaver.terrainSwatches) {
                     if (typeof window.TileWeaver.terrainSwatches.setRibbonDrawingFade === 'function') {
                         window.TileWeaver.terrainSwatches.setRibbonDrawingFade(false);

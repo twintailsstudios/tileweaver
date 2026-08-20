@@ -621,13 +621,13 @@
 
                 // Priority 2: Layered Alpha Overlay Composite System (Option B - 46-Tile System)
                 // Base tile is lowest-priority material in this cell
-                const baseMat = materialsPresent[0];
+                const baseMat = materialsPresent[0] || { tx: 0, ty: 0, tilesetId: '' };
                 const activeTs = state.tilesets[state.activeTilesetIndex] || state.tilesets[0];
-                const baseTsId = baseMat.tilesetId || (at ? at.tilesetId : (activeTs ? activeTs.id : ''));
+                const baseTsId = (baseMat && baseMat.tilesetId) || (at ? at.tilesetId : (activeTs ? activeTs.id : ''));
                 
                 let resultTile = {
-                    tx: baseMat.tx || 0,
-                    ty: baseMat.ty || 0,
+                    tx: (baseMat && baseMat.tx) || 0,
+                    ty: (baseMat && baseMat.ty) || 0,
                     tilesetId: baseTsId,
                     overlays: []
                 };

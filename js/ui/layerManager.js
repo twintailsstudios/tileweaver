@@ -9,13 +9,14 @@
  * -----------------------------------------------------------------------------
  * Manages the multi-layer hierarchy stack on the left sidebar:
  * 1. Dynamic layer stack rendering with reverse-order rendering (top canvas layer rendered topmost).
- * 2. Visual controls: Visibility (Eye), Lock (Key), Duplicate (Copy), Reorder (Up/Down), Delete (Trash).
- * 3. Opacity slider with 60 FPS requestAnimationFrame throttled preview and coalesced history snapshots.
- * 4. Inline double-click layer renaming with input sanitization and Escape cancellation.
- * 5. Deep-cloned layer duplication preserving 2D tile data, terrain vertices, and entity isolation.
- * 6. Mathematical active layer index correction on layer deletion.
- * 7. Tool mode auto-switching and preservation across layer selections.
- * 8. Global overlay view toggles (Grid, Passability, Region IDs).
+ * 2. Visual controls: Visibility (Eye), Lock (Key), Rename (Pencil), Duplicate (Copy), Reorder (Up/Down & Drag-and-Drop), Delete (Trash).
+ * 3. HTML5 drag-and-drop layer stack reordering with real-time drop highlighting and active selection preservation.
+ * 4. Opacity slider with 60 FPS requestAnimationFrame throttled preview and coalesced history snapshots.
+ * 5. Inline double-click & button-triggered layer renaming with input sanitization and Escape cancellation.
+ * 6. Deep-cloned layer duplication preserving 2D tile data, terrain vertices, and entity isolation.
+ * 7. Mathematical active layer index correction on layer deletion and reordering.
+ * 8. Tool mode auto-switching and preservation across layer selections.
+ * 9. Global overlay view toggles (Grid, Passability, Region IDs).
  */
 
 (function() {
@@ -27,6 +28,41 @@
 
     // RAF throttle handle for fluid 60 FPS opacity slider dragging
     let opacityRafId = null;
+
+    // Tracking for HTML5 drag-and-drop layer reordering
+    let draggedLayerIndex = null;
+
+    /**
+     * Reorders a layer from one stack index to another, keeping active selection intact
+     * and pushing an atomic history snapshot.
+     * 
+     * @param {number} fromIndex - Source layer index in `state.mapLayers`.
+     * @param {number} toIndex - Destination layer index in `state.mapLayers`.
+     * @returns {boolean} True if the layer was successfully moved.
+     */
+    function reorderLayer(fromIndex, toIndex) {
+        if (!Array.isArray(state.mapLayers) || state.mapLayers.length <= 1) return false;
+        if (typeof fromIndex !== 'number' || typeof toIndex !== 'number') return false;
+        if (fromIndex < 0 || fromIndex >= state.mapLayers.length || toIndex < 0 || toIndex >= state.mapLayers.length) return false;
+        if (fromIndex === toIndex) return false;
+
+        const activeLayer = state.mapLayers[state.activeLayerIndex];
+        const [moved] = state.mapLayers.splice(fromIndex, 1);
+        state.mapLayers.splice(toIndex, 0, moved);
+
+        // Keep activeLayerIndex pointing to the same active layer
+        if (activeLayer) {
+            const newActiveIndex = state.mapLayers.indexOf(activeLayer);
+            if (newActiveIndex >= 0) {
+                state.activeLayerIndex = newActiveIndex;
+            }
+        }
+
+        pushHistoryState();
+        renderLayerUI();
+        drawMap();
+        return true;
+    }
 
     /**
      * Deep-clones a layer data object to guarantee complete memory isolation.
@@ -94,6 +130,102 @@
     }
 
     /**
+     * Programmatically renames a layer at a given index with length clamping and history tracking.
+     * 
+     * @param {number} layerIndex - Target layer index in `state.mapLayers`.
+     * @param {string} newName - Desired new layer name string.
+     * @returns {boolean} True if the rename succeeded and state was committed.
+     */
+    function renameLayer(layerIndex, newName) {
+        if (!Array.isArray(state.mapLayers) || layerIndex < 0 || layerIndex >= state.mapLayers.length) return false;
+        const layer = state.mapLayers[layerIndex];
+        if (!layer) return false;
+
+        const trimmed = (typeof newName === 'string' ? newName.trim() : '');
+        if (!trimmed) return false;
+
+        const sanitized = trimmed.substring(0, 60);
+        if (sanitized !== layer.name) {
+            layer.name = sanitized;
+            pushHistoryState();
+            renderLayerUI();
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Initiates inline renaming UI within a given layer DOM element or by layer index.
+     * 
+     * @param {number} layerIndex - Target layer index in `state.mapLayers`.
+     * @param {HTMLElement} [itemElement] - Optional existing DOM item element.
+     */
+    function startRename(layerIndex, itemElement) {
+        if (!Array.isArray(state.mapLayers) || layerIndex < 0 || layerIndex >= state.mapLayers.length) return;
+        const layer = state.mapLayers[layerIndex];
+        if (!layer) return;
+
+        let item = itemElement;
+        if (!item) {
+            const listEl = document.getElementById('layers-list');
+            if (listEl) {
+                const items = listEl.querySelectorAll ? listEl.querySelectorAll('.layer-item') : [];
+                const domIndex = state.mapLayers.length - 1 - layerIndex;
+                item = items[domIndex];
+            }
+        }
+        if (!item) return;
+
+        const nameLabel = item.querySelector('.layer-name-label');
+        if (!nameLabel) return;
+
+        const currentName = layer.name;
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = currentName;
+        input.maxLength = 60;
+        input.className = 'w-full bg-slate-950 border border-blue-500 rounded px-1.5 py-0.5 text-xs text-slate-100 font-bold focus:outline-none focus:ring-1 focus:ring-blue-400';
+
+        // Shield input from parent selection clicks and editor hotkeys
+        ['click', 'dblclick', 'mousedown', 'mouseup', 'keydown', 'keyup'].forEach(eventType => {
+            input.addEventListener(eventType, (e) => e.stopPropagation());
+        });
+
+        let committed = false;
+        const commitRename = () => {
+            if (committed) return;
+            committed = true;
+            const newName = input.value.trim();
+            if (newName && newName !== currentName) {
+                layer.name = newName.substring(0, 60);
+                pushHistoryState();
+            }
+            renderLayerUI();
+        };
+
+        const cancelRename = () => {
+            if (committed) return;
+            committed = true;
+            renderLayerUI();
+        };
+
+        input.addEventListener('keydown', (evt) => {
+            if (evt.key === 'Enter') {
+                evt.preventDefault();
+                commitRename();
+            } else if (evt.key === 'Escape') {
+                evt.preventDefault();
+                cancelRename();
+            }
+        });
+        input.addEventListener('blur', commitRename);
+
+        nameLabel.replaceWith(input);
+        input.focus();
+        input.select();
+    }
+
+    /**
      * Re-renders the layer hierarchy list in the sidebar DOM.
      * Iterates through `state.mapLayers` in reverse order (topmost visual layer rendered first).
      */
@@ -122,7 +254,9 @@
 
             const item = document.createElement('div');
             item.className = `layer-item flex flex-col p-2.5 rounded-lg bg-slate-900/90 border text-xs gap-2 cursor-pointer transition-all shadow-sm ${isSelected ? 'active border-blue-500/80 border-l-4 border-l-blue-500 bg-slate-850' : 'border-slate-700/70 hover:border-slate-600 hover:bg-slate-850'}`;
-            
+            item.setAttribute('draggable', 'true');
+            item.setAttribute('data-layer-index', String(i));
+
             const isObjectGroup = (layer.type === 'objectgroup');
             const badgeClass = isObjectGroup ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-blue-500/20 text-blue-300 border-blue-500/40';
             const badgeText = isObjectGroup ? 'Obj' : 'Tile';
@@ -130,18 +264,24 @@
 
             item.innerHTML = `
                 <div class="flex items-center justify-between gap-2 min-w-0">
-                    <div class="flex items-center gap-2 min-w-0 flex-1">
-                        <button class="btn-vis p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-slate-200 transition-colors" title="Toggle Visibility">
+                    <div class="flex items-center gap-1 min-w-0 flex-1">
+                        <div class="layer-drag-handle p-0.5 text-slate-500 hover:text-slate-200 cursor-grab active:cursor-grabbing shrink-0" title="Drag to reorder layer">
+                            <i class="ph ph-dots-six-vertical text-sm"></i>
+                        </div>
+                        <button class="btn-vis p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-slate-200 transition-colors shrink-0" title="Toggle Visibility">
                             <i class="ph ${layer.visible ? 'ph-eye text-blue-400 text-sm' : 'ph-eye-slash text-slate-600 text-sm'}"></i>
                         </button>
-                        <button class="btn-lock p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-slate-200 transition-colors" title="Toggle Lock">
+                        <button class="btn-lock p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-slate-200 transition-colors shrink-0" title="Toggle Lock">
                             <i class="ph ${layer.locked ? 'ph-lock-key text-amber-400 text-sm' : 'ph-lock-key-open text-slate-600 text-sm'}"></i>
                         </button>
-                        <span class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border ${badgeClass}">${badgeText}</span>
-                        <span class="layer-name-label font-bold truncate text-slate-100 text-xs hover:underline cursor-text" title="Double click to rename: ${layer.name}">${layer.name}${objCountText}</span>
+                        <span class="px-1.5 py-0.5 text-[9px] font-mono font-bold rounded border shrink-0 ${badgeClass}">${badgeText}</span>
+                        <span class="layer-name-label font-bold truncate text-slate-100 text-xs hover:underline cursor-text flex-1 min-w-0" title="Double click or click pencil to rename: ${layer.name}">${layer.name}${objCountText}</span>
                     </div>
 
-                    <div class="flex items-center gap-0.5">
+                    <div class="flex items-center gap-0.5 shrink-0">
+                        <button class="btn-rename p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-blue-300 transition-colors" title="Rename Layer">
+                            <i class="ph ph-pencil-simple"></i>
+                        </button>
                         <button class="btn-dup p-1 hover:bg-slate-700 rounded text-slate-400 hover:text-blue-300 transition-colors" title="Duplicate Layer">
                             <i class="ph ph-copy"></i>
                         </button>
@@ -164,10 +304,81 @@
                 </div>
             `;
 
-            // Layer item selection handler
+            // HTML5 Drag and Drop Event Listeners
+            item.addEventListener('dragstart', (e) => {
+                // Guard: Suppress dragging when clicking buttons, inputs, or sliders
+                if (e.target.closest && (e.target.closest('button') || e.target.closest('input'))) {
+                    e.preventDefault();
+                    return;
+                }
+
+                draggedLayerIndex = i;
+                if (e.dataTransfer) {
+                    e.dataTransfer.effectAllowed = 'move';
+                    e.dataTransfer.setData('text/plain', String(i));
+                }
+
+                // Add visual styling during drag
+                if (typeof requestAnimationFrame === 'function') {
+                    requestAnimationFrame(() => {
+                        if (item.classList) {
+                            item.classList.add('opacity-40', 'border-dashed', 'border-blue-400');
+                        }
+                    });
+                }
+            });
+
+            item.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                if (e.dataTransfer) {
+                    e.dataTransfer.dropEffect = 'move';
+                }
+                if (draggedLayerIndex !== null && draggedLayerIndex !== i) {
+                    if (item.classList) {
+                        item.classList.add('border-blue-400', 'bg-blue-950/40');
+                    }
+                }
+            });
+
+            item.addEventListener('dragleave', () => {
+                if (item.classList) {
+                    item.classList.remove('border-blue-400', 'bg-blue-950/40');
+                }
+            });
+
+            item.addEventListener('dragend', () => {
+                draggedLayerIndex = null;
+                const allItems = listEl.querySelectorAll ? listEl.querySelectorAll('.layer-item') : [];
+                allItems.forEach(el => {
+                    if (el.classList) {
+                        el.classList.remove('opacity-40', 'border-dashed', 'border-blue-400', 'bg-blue-950/40');
+                    }
+                });
+            });
+
+            item.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (item.classList) {
+                    item.classList.remove('border-blue-400', 'bg-blue-950/40');
+                }
+
+                let fromIdx = draggedLayerIndex;
+                if (fromIdx === null && e.dataTransfer && typeof e.dataTransfer.getData === 'function') {
+                    const data = e.dataTransfer.getData('text/plain');
+                    if (data !== '') fromIdx = parseInt(data, 10);
+                }
+
+                if (typeof fromIdx === 'number' && !isNaN(fromIdx) && fromIdx !== i) {
+                    reorderLayer(fromIdx, i);
+                }
+                draggedLayerIndex = null;
+            });
+
+            // Layer item selection handler (in-place class toggle to preserve DOM node for double-click)
             item.addEventListener('click', (e) => {
                 if (e.target.closest('button') || e.target.closest('input')) return;
                 
+                const wasActive = (state.activeLayerIndex === i);
                 state.activeLayerIndex = i;
                 const activeTs = state.tilesets ? state.tilesets[state.activeTilesetIndex] : null;
 
@@ -196,7 +407,19 @@
                     window.TileWeaver.tools.updateToolTabStates();
                 }
 
-                renderLayerUI();
+                if (!wasActive) {
+                    const allItems = listEl.querySelectorAll ? listEl.querySelectorAll('.layer-item') : [];
+                    allItems.forEach(el => {
+                        if (el.classList) {
+                            el.classList.remove('active', 'border-blue-500/80', 'border-l-4', 'border-l-blue-500', 'bg-slate-850');
+                            el.classList.add('border-slate-700/70');
+                        }
+                    });
+                    if (item.classList) {
+                        item.classList.add('active', 'border-blue-500/80', 'border-l-4', 'border-l-blue-500', 'bg-slate-850');
+                        item.classList.remove('border-slate-700/70');
+                    }
+                }
                 drawMap();
             });
 
@@ -205,37 +428,16 @@
             if (nameLabel) {
                 nameLabel.addEventListener('dblclick', (e) => {
                     e.stopPropagation();
-                    const currentName = layer.name;
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.value = currentName;
-                    input.className = 'w-full bg-slate-950 border border-blue-500 rounded px-1 text-xs text-slate-100 font-bold focus:outline-none';
-                    
-                    let committed = false;
-                    const commitRename = () => {
-                        if (committed) return;
-                        committed = true;
-                        const newName = input.value.trim();
-                        if (newName && newName !== currentName) {
-                            layer.name = newName.substring(0, 60);
-                            pushHistoryState();
-                        }
-                        renderLayerUI();
-                    };
+                    startRename(i, item);
+                });
+            }
 
-                    input.addEventListener('keydown', (evt) => {
-                        if (evt.key === 'Enter') {
-                            commitRename();
-                        } else if (evt.key === 'Escape') {
-                            committed = true;
-                            renderLayerUI();
-                        }
-                    });
-                    input.addEventListener('blur', commitRename);
-
-                    nameLabel.replaceWith(input);
-                    input.focus();
-                    input.select();
+            // Dedicated Rename Button Action
+            const btnRename = item.querySelector('.btn-rename');
+            if (btnRename) {
+                btnRename.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    startRename(i, item);
                 });
             }
 
@@ -421,6 +623,9 @@
         renderLayerList: renderLayerUI,
         renderLayersList: renderLayerUI,
         initLayerUI,
-        cloneLayerObject
+        cloneLayerObject,
+        renameLayer,
+        startRename,
+        reorderLayer
     };
 })();

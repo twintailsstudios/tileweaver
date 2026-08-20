@@ -29,6 +29,36 @@ function createMockElement(tag = 'div', id = '') {
         innerHTMLValue: '',
         listeners: {},
         style: {},
+        maxLength: 524288,
+        dataset: {},
+        setAttribute(name, val) {
+            this[name] = val;
+            if (name.startsWith('data-')) {
+                const key = name.slice(5).replace(/-([a-z])/g, (_, c) => c.toUpperCase());
+                this.dataset[key] = val;
+            }
+        },
+        getAttribute(name) {
+            return this[name] || null;
+        },
+        
+        get classList() {
+            return {
+                add: (...classes) => {
+                    const set = new Set((el.className || '').split(' ').filter(Boolean));
+                    classes.forEach(c => set.add(c));
+                    el.className = Array.from(set).join(' ');
+                },
+                remove: (...classes) => {
+                    const set = new Set((el.className || '').split(' ').filter(Boolean));
+                    classes.forEach(c => set.delete(c));
+                    el.className = Array.from(set).join(' ');
+                },
+                contains: (cls) => {
+                    return (el.className || '').split(' ').filter(Boolean).includes(cls);
+                }
+            };
+        },
         
         get innerHTML() {
             return this.innerHTMLValue;
@@ -37,6 +67,11 @@ function createMockElement(tag = 'div', id = '') {
             this.innerHTMLValue = val;
             this.children = [];
             // Parse buttons, inputs, spans for mock interaction
+            if (val.includes('layer-drag-handle')) {
+                const dragHandle = createMockElement('div');
+                dragHandle.className = 'layer-drag-handle';
+                this.appendChild(dragHandle);
+            }
             if (val.includes('btn-vis')) {
                 const btnVis = createMockElement('button');
                 btnVis.className = 'btn-vis';
@@ -46,6 +81,11 @@ function createMockElement(tag = 'div', id = '') {
                 const btnLock = createMockElement('button');
                 btnLock.className = 'btn-lock';
                 this.appendChild(btnLock);
+            }
+            if (val.includes('btn-rename')) {
+                const btnRename = createMockElement('button');
+                btnRename.className = 'btn-rename';
+                this.appendChild(btnRename);
             }
             if (val.includes('btn-dup')) {
                 const btnDup = createMockElement('button');
@@ -112,31 +152,36 @@ function createMockElement(tag = 'div', id = '') {
             }
         },
         querySelector(selector) {
-            if (selector.startsWith('.')) {
-                const cls = selector.substring(1);
-                for (const child of this.children) {
-                    if (child.className && child.className.includes(cls)) return child;
-                    const nested = child.querySelector(selector);
-                    if (nested) return nested;
-                }
-            } else if (selector.startsWith('#')) {
-                const elId = selector.substring(1);
-                for (const child of this.children) {
-                    if (child.id === elId) return child;
-                    const nested = child.querySelector(selector);
-                    if (nested) return nested;
-                }
+            const matches = (node, sel) => {
+                if (sel.startsWith('.')) return node.className && node.className.includes(sel.substring(1));
+                if (sel.startsWith('#')) return node.id === sel.substring(1);
+                if (sel.includes('[type="text"]')) return node.tagName === 'INPUT' && node.type === 'text';
+                if (sel.includes('[type="range"]')) return node.tagName === 'INPUT' && node.type === 'range';
+                const tag = sel.split('[')[0].toUpperCase();
+                return node.tagName === tag;
+            };
+
+            for (const child of this.children) {
+                if (matches(child, selector)) return child;
+                const nested = child.querySelector(selector);
+                if (nested) return nested;
             }
             return null;
         },
         querySelectorAll(selector) {
+            const matches = (node, sel) => {
+                if (sel.startsWith('.')) return node.className && node.className.includes(sel.substring(1));
+                if (sel.startsWith('#')) return node.id === sel.substring(1);
+                if (sel.includes('[type="text"]')) return node.tagName === 'INPUT' && node.type === 'text';
+                if (sel.includes('[type="range"]')) return node.tagName === 'INPUT' && node.type === 'range';
+                const tag = sel.split('[')[0].toUpperCase();
+                return node.tagName === tag;
+            };
+
             const results = [];
-            if (selector.startsWith('.')) {
-                const cls = selector.substring(1);
-                for (const child of this.children) {
-                    if (child.className && child.className.includes(cls)) results.push(child);
-                    results.push(...child.querySelectorAll(selector));
-                }
+            for (const child of this.children) {
+                if (matches(child, selector)) results.push(child);
+                results.push(...child.querySelectorAll(selector));
             }
             return results;
         },
@@ -174,6 +219,13 @@ global.document = {
     },
     createElement(tag) {
         return createMockElement(tag);
+    },
+    querySelectorAll(sel) {
+        const results = [];
+        Object.values(elements).forEach(el => {
+            results.push(...el.querySelectorAll(sel));
+        });
+        return results;
     }
 };
 
@@ -275,6 +327,9 @@ assert.strictEqual(typeof layerManager.renderLayerList, 'function', 'renderLayer
 assert.strictEqual(typeof layerManager.renderLayersList, 'function', 'renderLayersList (plural) alias must be exported');
 assert.strictEqual(typeof layerManager.initLayerUI, 'function', 'initLayerUI must be exported');
 assert.strictEqual(typeof layerManager.cloneLayerObject, 'function', 'cloneLayerObject must be exported');
+assert.strictEqual(typeof layerManager.renameLayer, 'function', 'renameLayer must be exported');
+assert.strictEqual(typeof layerManager.startRename, 'function', 'startRename must be exported');
+assert.strictEqual(typeof layerManager.reorderLayer, 'function', 'reorderLayer must be exported');
 console.log('  ✔ All public methods and plural aliases exported correctly!');
 
 // -------------------------------------------------------------
@@ -463,6 +518,145 @@ assert.strictEqual(document.getElementById('toggle-passability').checked, true, 
 assert.strictEqual(document.getElementById('toggle-regions').checked, false, 'Regions checkbox synchronized with state');
 console.log('  ✔ Overlay checkbox state synchronization verified!');
 
+// -------------------------------------------------------------
+// TEST 8: Layer Renaming (API, Action Button, Double-Click, Clamping, History)
+// -------------------------------------------------------------
+console.log('\n▶ TEST 8: Layer Renaming & Inline Editing Controls');
+mockState.mapLayers = [
+    createMockLayerObject('Background Ground', 'tilelayer'),
+    createMockLayerObject('Decorations', 'tilelayer')
+];
+mockState.activeLayerIndex = 1;
+layerManager.renderLayerUI();
+
+const initialRenamePush = historyPushCount;
+
+// Sub-Test 8.1: Programmatic renameLayer API
+const renameSuccess = layerManager.renameLayer(1, 'Foliage & Props');
+assert.strictEqual(renameSuccess, true, 'renameLayer should return true for valid name change');
+assert.strictEqual(mockState.mapLayers[1].name, 'Foliage & Props', 'Layer name should be updated');
+assert.strictEqual(historyPushCount, initialRenamePush + 1, 'pushHistoryState should be called on renameLayer');
+
+// Sub-Test 8.2: Empty / whitespace name rejection
+const emptyRename = layerManager.renameLayer(1, '   ');
+assert.strictEqual(emptyRename, false, 'Empty name should be rejected');
+assert.strictEqual(mockState.mapLayers[1].name, 'Foliage & Props', 'Layer name must remain unchanged on empty rename');
+
+// Sub-Test 8.3: 60-character length clamping
+const longName = 'A'.repeat(100);
+const clampSuccess = layerManager.renameLayer(1, longName);
+assert.strictEqual(clampSuccess, true, 'Clamped rename should succeed');
+assert.strictEqual(mockState.mapLayers[1].name.length, 60, 'Layer name must be clamped to 60 characters');
+
+// Sub-Test 8.4: Dedicated Rename Button UI & startRename Execution
+layerManager.renderLayerUI();
+const listEl = document.getElementById('layers-list');
+// In reverse order: index 1 is at listEl.children[0]
+const topLayerItem = listEl.children[0];
+const btnRename = topLayerItem.querySelector('.btn-rename');
+assert.ok(btnRename, 'btn-rename button must exist in layer item');
+
+// Trigger startRename via button click
+btnRename.click();
+// Check that an input has replaced the name label
+let inputEl = topLayerItem.querySelector('input[type="text"]');
+assert.ok(inputEl, 'Input element should be created on rename trigger');
+assert.strictEqual(inputEl.maxLength, 60, 'Input maxLength must be 60');
+
+// Trigger Escape keydown on input -> Should cancel without saving
+inputEl.value = 'Cancelled Edit Name';
+inputEl.dispatchEvent({ type: 'keydown', key: 'Escape', preventDefault: () => {}, stopPropagation: () => {} });
+assert.notStrictEqual(mockState.mapLayers[1].name, 'Cancelled Edit Name', 'Escape should cancel rename without mutating state');
+
+// Trigger startRename via double click on label
+layerManager.renderLayerUI();
+const currentTopItem = listEl.children[0];
+const nameLabel = currentTopItem.querySelector('.layer-name-label');
+nameLabel.dispatchEvent({ type: 'dblclick', stopPropagation: () => {} });
+inputEl = currentTopItem.querySelector('input[type="text"]');
+assert.ok(inputEl, 'Double-clicking name label should activate rename input');
+
+// Commit new name via Enter keydown
+inputEl.value = 'Trees & Foliage';
+const preEnterPush = historyPushCount;
+inputEl.dispatchEvent({ type: 'keydown', key: 'Enter', preventDefault: () => {}, stopPropagation: () => {} });
+assert.strictEqual(mockState.mapLayers[1].name, 'Trees & Foliage', 'Enter keydown should commit new layer name');
+assert.strictEqual(historyPushCount, preEnterPush + 1, 'pushHistoryState should be called on commit');
+
+console.log('  ✔ Programmatic renameLayer, action button, double-click, 60-char clamping, and history verified!');
+
+// -------------------------------------------------------------
+// TEST 9: Drag & Drop Layer Reordering (Math, Invariants & Events)
+// -------------------------------------------------------------
+console.log('\n▶ TEST 9: Drag & Drop Layer Reordering');
+mockState.mapLayers = [
+    createMockLayerObject('Layer 0 (Ground)', 'tilelayer'),
+    createMockLayerObject('Layer 1 (Decorations)', 'tilelayer'),
+    createMockLayerObject('Layer 2 (Objects)', 'objectgroup')
+];
+mockState.activeLayerIndex = 0; // Layer 0 active
+layerManager.renderLayerUI();
+
+const initialReorderPush = historyPushCount;
+const initialReorderDraw = drawMapCount;
+
+// Sub-Test 9.1: Programmatic reorderLayer(0, 2) - move bottom layer to top
+const reorderSuccess1 = layerManager.reorderLayer(0, 2);
+assert.strictEqual(reorderSuccess1, true, 'reorderLayer(0, 2) should return true');
+assert.strictEqual(mockState.mapLayers[0].name, 'Layer 1 (Decorations)', 'Layer 1 should now be at index 0');
+assert.strictEqual(mockState.mapLayers[1].name, 'Layer 2 (Objects)', 'Layer 2 should now be at index 1');
+assert.strictEqual(mockState.mapLayers[2].name, 'Layer 0 (Ground)', 'Layer 0 should now be at index 2 (Top)');
+assert.strictEqual(mockState.activeLayerIndex, 2, 'activeLayerIndex must follow Layer 0 to index 2');
+assert.strictEqual(historyPushCount, initialReorderPush + 1, 'pushHistoryState should be called on reorder');
+assert.strictEqual(drawMapCount, initialReorderDraw + 1, 'drawMap should be called on reorder');
+
+// Sub-Test 9.2: Boundary guards and invalid index rejection
+assert.strictEqual(layerManager.reorderLayer(2, 2), false, 'Reorder to same index must return false');
+assert.strictEqual(layerManager.reorderLayer(-1, 1), false, 'Negative fromIndex must return false');
+assert.strictEqual(layerManager.reorderLayer(0, 5), false, 'Out-of-bounds toIndex must return false');
+
+// Sub-Test 9.3: DOM drag handle and draggable attribute verification
+layerManager.renderLayerUI();
+const reorderListEl = document.getElementById('layers-list');
+assert.strictEqual(reorderListEl.children.length, 3, 'Should render 3 layer items');
+
+const topItemEl = reorderListEl.children[0]; // Layer 0 (index 2 in state)
+assert.strictEqual(topItemEl.getAttribute('draggable'), 'true', 'Layer item must be draggable');
+assert.ok(topItemEl.querySelector('.layer-drag-handle'), 'Layer item must contain .layer-drag-handle');
+
+// Sub-Test 9.4: Drag & Drop event lifecycle simulation
+// Move top item (Layer 0 at state index 2) to bottom (state index 0) via mock drop
+const mockDataTransfer = {
+    data: {},
+    effectAllowed: '',
+    dropEffect: '',
+    setData(format, val) { this.data[format] = String(val); },
+    getData(format) { return this.data[format] || ''; }
+};
+
+// Dispatch dragstart on top item
+topItemEl.dispatchEvent({
+    type: 'dragstart',
+    dataTransfer: mockDataTransfer,
+    target: topItemEl,
+    preventDefault: () => {}
+});
+assert.strictEqual(mockDataTransfer.getData('text/plain'), '2', 'dragstart should populate dataTransfer with index 2');
+
+// Dispatch drop on bottom item (state index 0, DOM child 2)
+const bottomItemEl = reorderListEl.children[2];
+bottomItemEl.dispatchEvent({
+    type: 'drop',
+    dataTransfer: mockDataTransfer,
+    target: bottomItemEl,
+    preventDefault: () => {}
+});
+
+assert.strictEqual(mockState.mapLayers[0].name, 'Layer 0 (Ground)', 'Layer 0 moved back to bottom (index 0)');
+assert.strictEqual(mockState.activeLayerIndex, 0, 'activeLayerIndex followed Layer 0 to index 0');
+
+console.log('  ✔ Programmatic reorderLayer, boundary guards, drag handle, and drag/drop workflow verified!');
+
 console.log('\n===============================================================');
-console.log('🎉 ALL LAYER MANAGER AUTOMATED TESTS PASSED (7/7)!');
+console.log('🎉 ALL LAYER MANAGER AUTOMATED TESTS PASSED (9/9)!');
 console.log('===============================================================');

@@ -51,6 +51,8 @@
         isSpacePressed: false,
         /** Track whether Shift key is held down (used for autotile static overrides) */
         isShiftPressed: false,
+        /** Track whether Control / Cmd key is held down (used for straight-line axis-locking during drawing) */
+        isCtrlPressed: false,
         /** Active pan dragging flag */
         isPanning: false,
         /** Initial mouse X position when pan drag begins */
@@ -185,7 +187,7 @@
         /** Initial tile coordinate when drag selecting on tileset canvas */
         tilesetDragStart: { col: 0, row: 0 },
 
-        // --- Shape Tool Preview State ---
+        // --- Shape Tool Preview & Axis Lock State ---
         /** Starting column for Line or Rect drawing tools */
         shapeStartCol: -1,
         /** Starting row for Line or Rect drawing tools */
@@ -198,6 +200,16 @@
         lastTerrainVx: -1,
         /** Last terrain vertex Y coordinate painted during drag */
         lastTerrainVy: -1,
+        /** Anchor column for straight-line axis locking during drawing stroke */
+        strokeAnchorCol: -1,
+        /** Anchor row for straight-line axis locking during drawing stroke */
+        strokeAnchorRow: -1,
+        /** Active locked axis during straight-line drawing: null | 'x' | 'y' */
+        strokeAxisLock: null,
+        /** Last cell column where drawing/painting was applied (for gapless interpolation) */
+        lastPaintedCol: -1,
+        /** Last cell row where drawing/painting was applied (for gapless interpolation) */
+        lastPaintedRow: -1,
 
         // --- Viewport Hover Position ---
         /** Hovered tile column under cursor (-1 if outside) */
